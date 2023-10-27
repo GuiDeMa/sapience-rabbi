@@ -1,20 +1,25 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "target": "es2020",
     "lib": [
-      "es6", "ES2015", "ES2016", "ES2017", "DOM"
+      "es2020", "DOM"
     ],
     "allowJs": true,
     "module": "commonjs",
-    "outDir": "./dist",
-		"sourceMap": true,
-		"sourceRoot": "./src"
+    "outDir": "dist",
+		"sourceRoot": ".",
+    "inlineSourceMap": true,
+    "types": ["node", "mocha"]
   },
-  "include": [
-    "src"
-  ],
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["/**/*.ts", "bsv-spv-importers/lockup-listener.js"],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "src/test"
   ]
 }
