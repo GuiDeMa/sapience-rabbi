@@ -10,6 +10,7 @@ import { log } from './log'
 import { join } from 'path'
 
 import { ApolloServer, BaseContext } from "@apollo/server";
+
 import hapiApollo from "@as-integrations/hapi";
 
 const Joi = require('joi')
@@ -19,6 +20,10 @@ const Pack = require('../package');
 import { load } from './server/handlers'
 
 const handlers = load(join(__dirname, './server/handlers'))
+
+import { schema } from './schema'
+
+import { context } from './context'
 
 export const server = new Server({
   host: config.get('host'),
@@ -97,45 +102,9 @@ export async function start() {
 
     const HapiSwagger = require('hapi-swagger');
 
-    const typeDefs = `#graphql
-      # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-
-      # This "Book" type defines the queryable fields for every book in our data source.
-      type Book {
-        title: String
-        author: String
-      }
-
-      # The "Query" type is special: it lists all of the available queries that
-      # clients can execute, along with the return type for each. In this
-      # case, the "books" query returns an array of zero or more Books (defined above).
-      type Query {
-        books: [Book]
-      }
-    `;
-
-    const books = [
-      {
-        title: 'The Awakening',
-        author: 'Kate Chopin',
-      },
-      {
-        title: 'City of Glass',
-        author: 'Paul Auster',
-      },
-    ];
-
-    // Resolvers define how to fetch the types defined in your schema.
-    // This resolver retrieves books from the "books" array above.
-    const resolvers = {
-      Query: {
-        books: () => books,
-      },
-    };
-
-    const apolloServer = new ApolloServer<BaseContext>({
-      typeDefs,
-      resolvers
+    const apolloServer = new ApolloServer({
+      schema,
+      context
     })
   
     await apolloServer.start()

@@ -1,4 +1,3 @@
-
 import config from './config'
 
 const winston = require('winston');
