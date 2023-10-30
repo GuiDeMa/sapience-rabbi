@@ -22,7 +22,6 @@ export const Link = objectType({
         }),
         t.nonNull.list.nonNull.field("voters", {
             type: "User",
-            //@ts-ignore
             resolve(parent, args, context) {
                 return context.prisma.link
                     .findUnique({ where: { id: parent.id }})
@@ -79,7 +78,7 @@ export const LinkQuery = extendType({
                     where,
                     skip: args?.skip as number | undefined,
                     take: args?.take as number | undefined,
-                    orderBy: args.orderBy as Prisma.Enumerable<Prisma.LinkOrderByWithRelationInput> | undefined
+                    //orderBy: args.orderBy as Prisma.Enumerable<Prisma.LinkOrderByWithRelationInput> | undefined
                 })
                 const count = await context.prisma.link.count({ where })
                 const id = `main-feed:${JSON.stringify(args)}`
@@ -116,6 +115,7 @@ export const LinkMutation = extendType({
             resolve(parents, args, context) {
                 const { description, url } = args;
                 const { userId } = context;
+                console.log(userId)
 
                 if (!userId) { 
                     throw new Error("Cannot post without logging in.");

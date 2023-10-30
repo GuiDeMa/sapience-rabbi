@@ -1,4 +1,3 @@
-import { User } from "@prisma/client";
 import { extendType, intArg, nonNull, objectType } from "nexus";
 
 export const Vote = objectType({
@@ -40,7 +39,7 @@ export const VoteMutation = extendType({
                     where: { id: userId }
                 })
 
-                return { link, user: user as User}
+                return { link, user }
             } 
         })
     },

@@ -104,7 +104,6 @@ export async function start() {
 
     const apolloServer = new ApolloServer({
       schema,
-      context
     })
   
     await apolloServer.start()
@@ -119,6 +118,7 @@ export async function start() {
         { 
           plugin: hapiApollo,
           options: {
+            context,
             apolloServer,
             path: '/graphql'
           }
