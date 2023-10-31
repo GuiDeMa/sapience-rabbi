@@ -115,7 +115,6 @@ export const LinkMutation = extendType({
             resolve(parents, args, context) {
                 const { description, url } = args;
                 const { userId } = context;
-                console.log(userId)
 
                 if (!userId) { 
                     throw new Error("Cannot post without logging in.");

@@ -23,7 +23,7 @@ const handlers = load(join(__dirname, './server/handlers'))
 
 import { schema } from './schema'
 
-import { context } from './context'
+import { context } from "./context"
 
 export const server = new Server({
   host: config.get('host'),
@@ -118,7 +118,9 @@ export async function start() {
         { 
           plugin: hapiApollo,
           options: {
-            context,
+            context: async ({ request }) => {
+              return context({ req:request })
+            },
             apolloServer,
             path: '/graphql'
           }
