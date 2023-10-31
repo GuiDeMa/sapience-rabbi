@@ -113,7 +113,7 @@ export interface NexusGenFieldTypes {
     vote: NexusGenRootTypes['Vote'] | null; // Vote
   }
   Query: { // field return type
-    feed: NexusGenRootTypes['Feed']; // Feed!
+    feed: NexusGenRootTypes['Link'][]; // [Link!]!
   }
   User: { // field return type
     email: string; // String!
@@ -153,7 +153,7 @@ export interface NexusGenFieldTypeNames {
     vote: 'Vote'
   }
   Query: { // field return type name
-    feed: 'Feed'
+    feed: 'Link'
   }
   User: { // field return type name
     email: 'String'
@@ -190,7 +190,6 @@ export interface NexusGenArgTypes {
   Query: {
     feed: { // args
       filter?: string | null; // String
-      orderBy?: NexusGenInputs['LinkOrderByInput'][] | null; // [LinkOrderByInput!]
       skip?: number | null; // Int
       take?: number | null; // Int
     }

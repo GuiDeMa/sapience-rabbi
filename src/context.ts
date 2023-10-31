@@ -10,7 +10,6 @@ export interface Context {
 }
 
 export const context = ({ req }: { req: Request }): Context => {  
-    console.log("AuthToken", req.headers.authorization)
     const token =
         req && req.headers.authorization
             ? decodeAuthHeader(req.headers.authorization)

@@ -57,51 +57,31 @@ export const Feed = objectType({
 export const LinkQuery = extendType({
     type: "Query",
     definition(t) {
-        t.nonNull.field("feed", {
-            type: "Feed",
+        t.nonNull.list.nonNull.field("feed", {
+            type: "Link",
             args: {
-                filter: stringArg(),
+                filter: stringArg(),   
                 skip: intArg(),
                 take: intArg(),
-                orderBy: arg({ type: list(nonNull(LinkOrderByInput))})
             },
-            async resolve(parents, args, context, info) {
-                const where = args.filter
+            resolve(parent, args, context) {
+                const where = args.filter  
                     ? {
-                        OR: [
-                            { description: { contains: args.filter }},
-                            { url: { contains: args.filter }}
-                        ]
-                    } 
-                    : {}
-                const links = await context.prisma.link.findMany({
+                          OR: [
+                              { description: { contains: args.filter } },
+                              { url: { contains: args.filter } },
+                          ],
+                      }
+                    : {};
+                return context.prisma.link.findMany({
                     where,
                     skip: args?.skip as number | undefined,
                     take: args?.take as number | undefined,
-                    //orderBy: args.orderBy as Prisma.Enumerable<Prisma.LinkOrderByWithRelationInput> | undefined
-                })
-                const count = await context.prisma.link.count({ where })
-                const id = `main-feed:${JSON.stringify(args)}`
-                return {
-                    links,
-                    count, 
-                    id
-                }
-            }
-        })
-        /* t.field("link", {
-            type: "Link",
-            args: {
-                id: nonNull(intArg())
+                });
             },
-            resolve(parents, args, context, info) {
-                const linkId = args.id;
-                const link = context.prisma.link.findOne()
-                return link || null;
-            }
-        }) */
+        });
     },
-})
+});
 
 export const LinkMutation = extendType({
     type: "Mutation",
