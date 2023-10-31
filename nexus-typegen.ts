@@ -56,7 +56,7 @@ export interface NexusGenObjects {
   }
   Feed: { // root type
     count: number; // Int!
-    id: string; // ID!
+    id?: string | null; // ID
     links: NexusGenRootTypes['Link'][]; // [Link!]!
   }
   Link: { // root type
@@ -95,7 +95,7 @@ export interface NexusGenFieldTypes {
   }
   Feed: { // field return type
     count: number; // Int!
-    id: string; // ID!
+    id: string | null; // ID
     links: NexusGenRootTypes['Link'][]; // [Link!]!
   }
   Link: { // field return type
@@ -113,7 +113,7 @@ export interface NexusGenFieldTypes {
     vote: NexusGenRootTypes['Vote'] | null; // Vote
   }
   Query: { // field return type
-    feed: NexusGenRootTypes['Link'][]; // [Link!]!
+    feed: NexusGenRootTypes['Feed']; // Feed!
   }
   User: { // field return type
     email: string; // String!
@@ -153,7 +153,7 @@ export interface NexusGenFieldTypeNames {
     vote: 'Vote'
   }
   Query: { // field return type name
-    feed: 'Link'
+    feed: 'Feed'
   }
   User: { // field return type name
     email: 'String'
@@ -190,6 +190,7 @@ export interface NexusGenArgTypes {
   Query: {
     feed: { // args
       filter?: string | null; // String
+      orderBy?: NexusGenInputs['LinkOrderByInput'][] | null; // [LinkOrderByInput!]
       skip?: number | null; // Int
       take?: number | null; // Int
     }

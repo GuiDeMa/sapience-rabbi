@@ -4,15 +4,15 @@
    "private": true,
    "description": "Typescript Backend Best Practices With Postgres & RabbitMQ",
    "scripts": {
-      "dev": "ts-node-dev src/main.ts",
+      "dev": "ts-node-dev --transpile-only --no-notify --exit-child src/main.ts",
       "start": "ts-node src/main.ts",
       "test": "NODE_ENV=test mocha --require=ts-node/register --timeout=20000 __tests__/**/*_test.ts --exit",
       "runtest": "NODE_ENV=test mocha --require=ts-node/register --timeout=20000 $1",
-      "build": "tsc",
-      "postbuild": "shebang-trim dist/bin/cli.js && chmod +x dist/bin/cli.js",
+      "build": "prisma generate && npm run generate && tsc",
+      "postbuild": "shebang-trim dist/src/bin/cli.js && chmod +x dist/src/bin/cli.js",
       "ci": "circleci local execute --job build",
       "commit": "npx cz",
-      "generate": "ts-node --transpile-only src/schema.ts"
+      "generate": "ts-node-dev --transpile-only src/schema.ts"
    },
    "bin": {
       "rabbi": "./dist/bin/cli.js"

@@ -14,7 +14,7 @@
     "types": ["node", "mocha"]
   },
   "ts-node": {
-    "esm": true
+    "esm": true,
   },
   "include": ["/**/*.ts", "bsv-spv-importers/lockup-listener.js"],
   "exclude": [
