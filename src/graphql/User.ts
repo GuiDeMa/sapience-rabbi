@@ -1,6 +1,45 @@
 import { objectType } from "nexus";
 
 export const User = objectType({
+    name: 'User',
+    definition(t) {
+      t.string('id');
+      t.string('address');
+      t.string('paymail');
+      t.list.field('posts', {
+        type: 'Post',
+        resolve: (parent, args, context) => {
+          return context.prisma.user
+            .findUnique({
+              where: { id: parent.id },
+            })
+            .posts();
+        },
+      });
+      t.list.field('messages', {
+        type: 'Message',
+        resolve: (parent, args, context) => {
+          return context.prisma.user
+            .findUnique({
+              where: { id: parent.id },
+            })
+            .messages();
+        },
+      });
+      t.list.field('locks', {
+        type: 'Lock',
+        resolve: (parent, args, context) => {
+          return context.prisma.user
+            .findUnique({
+              where: { id: parent.id },
+            })
+            .locks();
+        },
+      });
+    },
+  });
+
+/* export const User = objectType({
     name: "User",
     definition(t) {
         t.nonNull.int("id");
@@ -25,4 +64,4 @@ export const User = objectType({
             }
         }) 
     },
-});
+}); */

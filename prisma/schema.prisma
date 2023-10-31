@@ -10,21 +10,48 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Link {
-  id          Int      @id @default(autoincrement())
-  createdAt   DateTime @default(now())
-  description String
-  url         String
-  postedBy    User?    @relation(name: "PostedBy", fields: [postedById], references: [id]) 
-  postedById  Int?
-  voters      User[]   @relation(name: "Votes") 
+model User {
+  id  String @id @default(uuid())
+  address String @unique
+  paymail String @unique
+  posts Post[]
+  messages Message[]
+  locks Lock[]
 }
 
-model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
-  links    Link[] @relation(name: "PostedBy") 
-  votes    Link[] @relation(name: "Votes") 
+model Post {
+  id String @id @default(uuid())
+  txid String @unique
+  content String
+  contentType String
+  inReplyTo String
+  paymail String
+  app String
+  locks Lock[]
+  user User @relation(fields: [paymail], references: [paymail])
+}
+
+model Message {
+  id String @id @default(uuid())
+  txid String @unique
+  content String
+  contentType String
+  inReplyTo String
+  paymail String
+  app String
+  locks Lock[]
+  user User @relation(fields: [paymail], references: [paymail])
+}
+
+model Lock {
+  id String @id @default(uuid())
+  txid String @unique
+  satoshis BigInt
+  blockHeight Int
+  post Post? @relation(fields:[postByTxid], references: [txid])
+  postByTxid String?
+  message Message? @relation(fields:[messageByTxid], references: [txid])
+  messageByTxid String?
+  user User @relation(fields:[userByAddress], references: [address])
+  userByAddress String
 }
