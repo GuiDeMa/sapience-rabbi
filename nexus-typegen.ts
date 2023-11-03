@@ -58,6 +58,7 @@ export interface NexusGenObjects {
     blockHeight: number; // Int!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
+    lockTargetByTxid: string; // String!
     paymail?: string | null; // String
     satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
@@ -110,7 +111,9 @@ export interface NexusGenFieldTypes {
     blockHeight: number; // Int!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
-    locker: NexusGenRootTypes['User'] | null; // User
+    lockTarget: NexusGenRootTypes['Transaction'] | null; // Transaction
+    lockTargetByTxid: string; // String!
+    locker: NexusGenRootTypes['User']; // User!
     paymail: string | null; // String
     satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
@@ -143,6 +146,8 @@ export interface NexusGenFieldTypes {
     block: number | null; // Int
     hash: string; // String!
     id: number; // Int!
+    lock: NexusGenRootTypes['Lock'] | null; // Lock
+    locks: Array<NexusGenRootTypes['Lock'] | null>; // [Lock]!
     message: NexusGenRootTypes['Message'] | null; // Message
     post: NexusGenRootTypes['Post'] | null; // Post
   }
@@ -162,6 +167,8 @@ export interface NexusGenFieldTypeNames {
     blockHeight: 'Int'
     createdAt: 'DateTime'
     id: 'Int'
+    lockTarget: 'Transaction'
+    lockTargetByTxid: 'String'
     locker: 'User'
     paymail: 'String'
     satoshis: 'BigInt'
@@ -195,6 +202,8 @@ export interface NexusGenFieldTypeNames {
     block: 'Int'
     hash: 'String'
     id: 'Int'
+    lock: 'Lock'
+    locks: 'Lock'
     message: 'Message'
     post: 'Post'
   }

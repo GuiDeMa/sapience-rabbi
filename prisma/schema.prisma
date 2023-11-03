@@ -14,9 +14,10 @@ model Transaction {
   id      Int      @id @default(autoincrement())
   hash    String   @unique
   block   Int
-  Post    Post?    @relation(name: "Transactions")
-  Message Message? @relation(name: "Transactions")
-  Lock    Lock?    @relation(name: "Transactions")
+  post    Post?    @relation(name: "Transactions")
+  message Message? @relation(name: "Transactions")
+  lock    Lock?    @relation(name: "Transactions")
+  locks   Lock[]   @relation(name: "LockTo")
 }
 
 model User {
@@ -58,11 +59,13 @@ model Message {
 
 model Lock {
   id                  Int          @id @default(autoincrement())
-  txid                String       @unique
+  txid                String?      @unique
   transaction         Transaction? @relation(name: "Transactions", fields: [txid], references: [hash])
   createdAt           DateTime     @default(now())
   satoshis            BigInt
   blockHeight         Int
+  lockTarget          Transaction? @relation(name: "LockTo", fields: [lockTargetByTxid], references: [hash]) // Can be Post or Message
+  lockTargetByTxid    String?
   locker              User?        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
   lockerByUserAddress String?
 }

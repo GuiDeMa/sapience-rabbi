@@ -10,10 +10,17 @@ export const Lock = objectType({
     t.nonNull.int("blockHeight");
     t.string("app");
     t.string("paymail");
-    t.field("locker", {
+    t.nonNull.field("locker", {
       type: "User",
       resolve(parent, args, context) {
         return context.prisma.lock.findUnique({ where: { txid: parent.txid } }).locker()
+      }
+    })
+    t.nonNull.string("lockTargetByTxid")
+    t.field("lockTarget", {
+      type: "Transaction",
+      resolve(parent, args, context) {
+        return context.prisma.lock.findFirst({ where: { lockTargetByTxid: parent.lockTargetByTxid}}).lockTarget()
       }
     }) 
   },

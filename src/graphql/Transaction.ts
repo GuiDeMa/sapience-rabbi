@@ -9,25 +9,25 @@ export const Transaction= objectType({
         t.nonNull.list.field("locks", {
             type: "Lock",
             resolve(parent, args, context) {
-                return context.prisma.transaction.findUnique({ where: { hash: parent.hash } })
+                return context.prisma.transaction.findUnique({ where: { hash: parent.hash } }).locks()
             }
         })
         t.field("post", {
             type: "Post",
             resolve(parent, args, context) {
-                return context.prisma.transaction.findUnique({ where: { hash: parent.hash } }).Post()
+                return context.prisma.transaction.findUnique({ where: { hash: parent.hash } }).post()
             }
         })
         t.field("message", {
             type: "Message",
             resolve(parent, args, context) {
-                return context.prisma.transaction.findUnique({ where: { hash: parent.hash } }).Message()
+                return context.prisma.transaction.findUnique({ where: { hash: parent.hash } }).message()
             }
         })
         t.field("lock", {
             type: "Lock",
             resolve(parent, args, context) {
-                return context.prisma.transaction.findUnique({ where: { hash: parent.hash } }).Lock()
+                return context.prisma.transaction.findUnique({ where: { hash: parent.hash } }).lock()
             }
         })
     }

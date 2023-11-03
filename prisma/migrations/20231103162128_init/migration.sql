@@ -45,12 +45,14 @@ CREATE TABLE "Message" (
 -- CreateTable
 CREATE TABLE "Lock" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "txid" TEXT NOT NULL,
+    "txid" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "satoshis" BIGINT NOT NULL,
     "blockHeight" INTEGER NOT NULL,
+    "lockTargetByTxid" TEXT,
     "lockerByUserAddress" TEXT,
-    CONSTRAINT "Lock_txid_fkey" FOREIGN KEY ("txid") REFERENCES "Transaction" ("hash") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Lock_txid_fkey" FOREIGN KEY ("txid") REFERENCES "Transaction" ("hash") ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT "Lock_lockTargetByTxid_fkey" FOREIGN KEY ("lockTargetByTxid") REFERENCES "Transaction" ("hash") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Lock_lockerByUserAddress_fkey" FOREIGN KEY ("lockerByUserAddress") REFERENCES "User" ("address") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
