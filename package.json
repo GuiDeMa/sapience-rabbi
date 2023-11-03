@@ -1,5 +1,5 @@
 {
-   "name": "rabbi_typescript_starter",
+   "name": "sapience-api",
    "version": "0.5.0",
    "private": true,
    "description": "Typescript Backend Best Practices With Postgres & RabbitMQ",
@@ -15,7 +15,7 @@
       "generate": "ts-node-dev --transpile-only src/schema.ts"
    },
    "bin": {
-      "rabbi": "./dist/bin/cli.js"
+      "rabbi": "./dist/src/bin/cli.js"
    },
    "keywords": [],
    "author": "Zyler",

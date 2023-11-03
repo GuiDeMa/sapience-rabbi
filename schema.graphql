@@ -2,62 +2,71 @@
 ### Do not make changes to this file directly
 
 
-type AuthPayload {
-  token: String!
-  user: User!
-}
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
 
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
 
-type Feed {
-  count: Int!
-  id: ID
-  links: [Link!]!
-}
-
-type Link {
+type Lock {
+  app: String
+  blockHeight: Int!
   createdAt: DateTime!
-  description: String!
   id: Int!
+  lockTarget: Transaction
+  lockTargetByTxid: String!
+  locker: User!
+  paymail: String
+  satoshis: BigInt!
+  txid: String!
+}
+
+type Message {
+  app: String
+  channel: String!
+  content: String!
+  contentType: String!
+  createdAt: DateTime!
+  id: Int!
+  inReplyTo: String
+  sentBy: User
+  txid: String!
+}
+
+type Post {
+  app: String
+  content: String!
+  contentType: String!
+  createdAt: DateTime!
+  id: Int!
+  inReplyTo: String
   postedBy: User
-  url: String!
-  voters: [User!]!
-}
-
-input LinkOrderByInput {
-  createdAt: Sort
-  description: Sort
-  url: Sort
-}
-
-type Mutation {
-  login(email: String!, password: String!): AuthPayload!
-  post(description: String!, url: String!): Link!
-  signup(email: String!, name: String!, password: String!): AuthPayload!
-  vote(linkId: Int!): Vote
+  txid: String!
 }
 
 type Query {
-  feed(filter: String, orderBy: [LinkOrderByInput!], skip: Int, take: Int): Feed!
+  ok: Boolean!
 }
 
-enum Sort {
-  asc
-  desc
+type Transaction {
+  block: Int
+  hash: String!
+  id: Int!
+  lock: Lock
+  locks: [Lock]!
+  message: Message
+  post: Post
 }
 
 type User {
-  email: String!
+  address: String!
   id: Int!
-  links: [Link!]!
-  name: String!
-  votes: [Vote!]!
-}
-
-type Vote {
-  link: Link!
-  user: User!
+  locks: [Lock!]!
+  messages: [Message!]!
+  paymail: String!
+  posts: [Post!]!
 }

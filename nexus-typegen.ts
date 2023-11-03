@@ -12,6 +12,10 @@ declare global {
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
     dateTime<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
+    /**
+     * The `BigInt` scalar type represents non-fractional signed whole numeric values.
+     */
+    bigint<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "BigInt";
   }
 }
 declare global {
@@ -20,6 +24,10 @@ declare global {
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
     dateTime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
+    /**
+     * The `BigInt` scalar type represents non-fractional signed whole numeric values.
+     */
+    bigint<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "BigInt";
   }
 }
 
@@ -29,15 +37,9 @@ declare global {
 }
 
 export interface NexusGenInputs {
-  LinkOrderByInput: { // input type
-    createdAt?: NexusGenEnums['Sort'] | null; // Sort
-    description?: NexusGenEnums['Sort'] | null; // Sort
-    url?: NexusGenEnums['Sort'] | null; // Sort
-  }
 }
 
 export interface NexusGenEnums {
-  Sort: "asc" | "desc"
 }
 
 export interface NexusGenScalars {
@@ -46,35 +48,50 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  BigInt: any
   DateTime: any
 }
 
 export interface NexusGenObjects {
-  AuthPayload: { // root type
-    token: string; // String!
-    user: NexusGenRootTypes['User']; // User!
-  }
-  Feed: { // root type
-    count: number; // Int!
-    id?: string | null; // ID
-    links: NexusGenRootTypes['Link'][]; // [Link!]!
-  }
-  Link: { // root type
+  Lock: { // root type
+    app?: string | null; // String
+    blockHeight: number; // Int!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
-    description: string; // String!
     id: number; // Int!
-    url: string; // String!
+    lockTargetByTxid: string; // String!
+    paymail?: string | null; // String
+    satoshis: NexusGenScalars['BigInt']; // BigInt!
+    txid: string; // String!
   }
-  Mutation: {};
+  Message: { // root type
+    app?: string | null; // String
+    channel: string; // String!
+    content: string; // String!
+    contentType: string; // String!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
+    inReplyTo?: string | null; // String
+    txid: string; // String!
+  }
+  Post: { // root type
+    app?: string | null; // String
+    content: string; // String!
+    contentType: string; // String!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
+    inReplyTo?: string | null; // String
+    txid: string; // String!
+  }
   Query: {};
-  User: { // root type
-    email: string; // String!
+  Transaction: { // root type
+    block?: number | null; // Int
+    hash: string; // String!
     id: number; // Int!
-    name: string; // String!
   }
-  Vote: { // root type
-    link: NexusGenRootTypes['Link']; // Link!
-    user: NexusGenRootTypes['User']; // User!
+  User: { // root type
+    address: string; // String!
+    id: number; // Int!
+    paymail: string; // String!
   }
 }
 
@@ -86,115 +103,121 @@ export interface NexusGenUnions {
 
 export type NexusGenRootTypes = NexusGenObjects
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
-  AuthPayload: { // field return type
-    token: string; // String!
-    user: NexusGenRootTypes['User']; // User!
-  }
-  Feed: { // field return type
-    count: number; // Int!
-    id: string | null; // ID
-    links: NexusGenRootTypes['Link'][]; // [Link!]!
-  }
-  Link: { // field return type
+  Lock: { // field return type
+    app: string | null; // String
+    blockHeight: number; // Int!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
-    description: string; // String!
     id: number; // Int!
-    postedBy: NexusGenRootTypes['User'] | null; // User
-    url: string; // String!
-    voters: NexusGenRootTypes['User'][]; // [User!]!
+    lockTarget: NexusGenRootTypes['Transaction'] | null; // Transaction
+    lockTargetByTxid: string; // String!
+    locker: NexusGenRootTypes['User']; // User!
+    paymail: string | null; // String
+    satoshis: NexusGenScalars['BigInt']; // BigInt!
+    txid: string; // String!
   }
-  Mutation: { // field return type
-    login: NexusGenRootTypes['AuthPayload']; // AuthPayload!
-    post: NexusGenRootTypes['Link']; // Link!
-    signup: NexusGenRootTypes['AuthPayload']; // AuthPayload!
-    vote: NexusGenRootTypes['Vote'] | null; // Vote
+  Message: { // field return type
+    app: string | null; // String
+    channel: string; // String!
+    content: string; // String!
+    contentType: string; // String!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
+    inReplyTo: string | null; // String
+    sentBy: NexusGenRootTypes['User'] | null; // User
+    txid: string; // String!
+  }
+  Post: { // field return type
+    app: string | null; // String
+    content: string; // String!
+    contentType: string; // String!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
+    inReplyTo: string | null; // String
+    postedBy: NexusGenRootTypes['User'] | null; // User
+    txid: string; // String!
   }
   Query: { // field return type
-    feed: NexusGenRootTypes['Feed']; // Feed!
+    ok: boolean; // Boolean!
+  }
+  Transaction: { // field return type
+    block: number | null; // Int
+    hash: string; // String!
+    id: number; // Int!
+    lock: NexusGenRootTypes['Lock'] | null; // Lock
+    locks: Array<NexusGenRootTypes['Lock'] | null>; // [Lock]!
+    message: NexusGenRootTypes['Message'] | null; // Message
+    post: NexusGenRootTypes['Post'] | null; // Post
   }
   User: { // field return type
-    email: string; // String!
+    address: string; // String!
     id: number; // Int!
-    links: NexusGenRootTypes['Link'][]; // [Link!]!
-    name: string; // String!
-    votes: NexusGenRootTypes['Vote'][]; // [Vote!]!
-  }
-  Vote: { // field return type
-    link: NexusGenRootTypes['Link']; // Link!
-    user: NexusGenRootTypes['User']; // User!
+    locks: NexusGenRootTypes['Lock'][]; // [Lock!]!
+    messages: NexusGenRootTypes['Message'][]; // [Message!]!
+    paymail: string; // String!
+    posts: NexusGenRootTypes['Post'][]; // [Post!]!
   }
 }
 
 export interface NexusGenFieldTypeNames {
-  AuthPayload: { // field return type name
-    token: 'String'
-    user: 'User'
-  }
-  Feed: { // field return type name
-    count: 'Int'
-    id: 'ID'
-    links: 'Link'
-  }
-  Link: { // field return type name
+  Lock: { // field return type name
+    app: 'String'
+    blockHeight: 'Int'
     createdAt: 'DateTime'
-    description: 'String'
     id: 'Int'
-    postedBy: 'User'
-    url: 'String'
-    voters: 'User'
+    lockTarget: 'Transaction'
+    lockTargetByTxid: 'String'
+    locker: 'User'
+    paymail: 'String'
+    satoshis: 'BigInt'
+    txid: 'String'
   }
-  Mutation: { // field return type name
-    login: 'AuthPayload'
-    post: 'Link'
-    signup: 'AuthPayload'
-    vote: 'Vote'
+  Message: { // field return type name
+    app: 'String'
+    channel: 'String'
+    content: 'String'
+    contentType: 'String'
+    createdAt: 'DateTime'
+    id: 'Int'
+    inReplyTo: 'String'
+    sentBy: 'User'
+    txid: 'String'
+  }
+  Post: { // field return type name
+    app: 'String'
+    content: 'String'
+    contentType: 'String'
+    createdAt: 'DateTime'
+    id: 'Int'
+    inReplyTo: 'String'
+    postedBy: 'User'
+    txid: 'String'
   }
   Query: { // field return type name
-    feed: 'Feed'
+    ok: 'Boolean'
+  }
+  Transaction: { // field return type name
+    block: 'Int'
+    hash: 'String'
+    id: 'Int'
+    lock: 'Lock'
+    locks: 'Lock'
+    message: 'Message'
+    post: 'Post'
   }
   User: { // field return type name
-    email: 'String'
+    address: 'String'
     id: 'Int'
-    links: 'Link'
-    name: 'String'
-    votes: 'Vote'
-  }
-  Vote: { // field return type name
-    link: 'Link'
-    user: 'User'
+    locks: 'Lock'
+    messages: 'Message'
+    paymail: 'String'
+    posts: 'Post'
   }
 }
 
 export interface NexusGenArgTypes {
-  Mutation: {
-    login: { // args
-      email: string; // String!
-      password: string; // String!
-    }
-    post: { // args
-      description: string; // String!
-      url: string; // String!
-    }
-    signup: { // args
-      email: string; // String!
-      name: string; // String!
-      password: string; // String!
-    }
-    vote: { // args
-      linkId: number; // Int!
-    }
-  }
-  Query: {
-    feed: { // args
-      filter?: string | null; // String
-      orderBy?: NexusGenInputs['LinkOrderByInput'][] | null; // [LinkOrderByInput!]
-      skip?: number | null; // Int
-      take?: number | null; // Int
-    }
-  }
 }
 
 export interface NexusGenAbstractTypeMembers {
@@ -205,9 +228,9 @@ export interface NexusGenTypeInterfaces {
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
-export type NexusGenInputNames = keyof NexusGenInputs;
+export type NexusGenInputNames = never;
 
-export type NexusGenEnumNames = keyof NexusGenEnums;
+export type NexusGenEnumNames = never;
 
 export type NexusGenInterfaceNames = never;
 
