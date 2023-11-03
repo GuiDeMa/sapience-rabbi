@@ -10,48 +10,59 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Transaction {
+  id      Int      @id @default(autoincrement())
+  hash    String   @unique
+  block   Int
+  Post    Post?    @relation(name: "Transactions")
+  Message Message? @relation(name: "Transactions")
+  Lock    Lock?    @relation(name: "Transactions")
+}
+
 model User {
-  id  String @id @default(uuid())
-  address String @unique
-  paymail String @unique
-  posts Post[]
-  messages Message[]
-  locks Lock[]
+  id       Int       @id @default(autoincrement())
+  address  String    @unique
+  paymail  String    @unique
+  posts    Post[]    @relation(name: "Posts")
+  messages Message[] @relation(name: "Messages")
+  locks    Lock[]    @relation(name: "Locks")
 }
 
 model Post {
-  id String @id @default(uuid())
-  txid String @unique
-  content String
-  contentType String
-  inReplyTo String
-  paymail String
-  app String
-  locks Lock[]
-  user User @relation(fields: [paymail], references: [paymail])
+  id                  Int          @id @default(autoincrement())
+  txid                String       @unique
+  transaction         Transaction? @relation(name: "Transactions", fields: [txid], references: [hash])
+  createdAt           DateTime     @default(now())
+  content             String
+  contentType         String
+  inReplyTo           String?
+  postedBy            User?        @relation(name: "Posts", fields: [postedByUserPaymail], references: [paymail])
+  postedByUserPaymail String?
+  app                 String
 }
 
 model Message {
-  id String @id @default(uuid())
-  txid String @unique
-  content String
-  contentType String
-  inReplyTo String
-  paymail String
-  app String
-  locks Lock[]
-  user User @relation(fields: [paymail], references: [paymail])
+  id                Int          @id @default(autoincrement())
+  txid              String       @unique
+  transaction       Transaction? @relation(name: "Transactions", fields: [txid], references: [hash])
+  createdAt         DateTime     @default(now())
+  channel           String       @unique
+  content           String
+  contentType       String
+  inReplyTo         String
+  paymail           String
+  app               String
+  sentBy            User?        @relation(name: "Messages", fields: [sentByUserPaymail], references: [paymail])
+  sentByUserPaymail String?
 }
 
 model Lock {
-  id String @id @default(uuid())
-  txid String @unique
-  satoshis BigInt
-  blockHeight Int
-  post Post? @relation(fields:[postByTxid], references: [txid])
-  postByTxid String?
-  message Message? @relation(fields:[messageByTxid], references: [txid])
-  messageByTxid String?
-  user User @relation(fields:[userByAddress], references: [address])
-  userByAddress String
+  id                  Int          @id @default(autoincrement())
+  txid                String       @unique
+  transaction         Transaction? @relation(name: "Transactions", fields: [txid], references: [hash])
+  createdAt           DateTime     @default(now())
+  satoshis            BigInt
+  blockHeight         Int
+  locker              User?        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
+  lockerByUserAddress String?
 }

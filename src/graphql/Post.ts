@@ -1,44 +1,21 @@
-import {
-    extendType,
-    nonNull,
-    objectType,
-    stringArg,
-    intArg,
-    inputObjectType,
-    enumType,
-    arg,
-    list,
-} from "nexus";
+import { objectType } from "nexus";
 
 export const Post = objectType({
-    name: 'Post',
-    definition(t) {
-      t.string('id');
-      t.string('txid');
-      t.string('content');
-      t.string('contentType');
-      t.string('inReplyTo');
-      t.string('paymail');
-      t.string('app');
-      t.list.field('locks', {
-        type: 'Lock',
-        resolve: (parent, args, context) => {
-          return context.prisma.post
-            .findUnique({
-              where: { id: parent.id },
-            })
-            .locks();
-        },
-      });
-      t.field('user', {
-        type: 'User',
-        resolve: (parent, args, context) => {
-          return context.prisma.post
-            .findUnique({
-              where: { id: parent.id },
-            })
-            .user();
-        },
-      });
-    },
-});
+  name: "Post",
+  definition(t) {
+    t.nonNull.int("id");
+    t.nonNull.string("txid");
+    t.nonNull.dateTime("createdAt");
+    t.nonNull.string("content");
+    t.nonNull.string("contentType");
+    t.string("inReplyTo");
+    t.string("app");
+    t.field("postedBy", {
+      type: "User",
+      resolve(parent, args, context) {
+        return context.prisma.post.findUnique({ where: { txid: parent.txid } }).postedBy()
+      }
+    })
+    
+  },
+})

@@ -1,44 +1,22 @@
-import {
-    extendType,
-    nonNull,
-    objectType,
-    stringArg,
-    intArg,
-    inputObjectType,
-    enumType,
-    arg,
-    list,
-} from "nexus";
+import { objectType } from "nexus";
 
 export const Message = objectType({
-    name: 'Message',
-    definition(t) {
-      t.string('id');
-      t.string('txid');
-      t.string('content');
-      t.string('contentType');
-      t.string('inReplyTo');
-      t.string('paymail');
-      t.string('app');
-      t.list.field('locks', {
-        type: 'Lock',
-        resolve: (parent, args, context) => {
-          return context.prisma.message
-            .findUnique({
-              where: { id: parent.id },
-            })
-            .locks();
-        },
-      });
-      t.field('user', {
-        type: 'User',
-        resolve: (parent, args, context) => {
-          return context.prisma.message
-            .findUnique({
-              where: { id: parent.id },
-            })
-            .user();
-        },
-      });
-    },
-});
+  name: "Message",
+  definition(t) {
+    t.nonNull.int("id");
+    t.nonNull.string("txid");
+    t.nonNull.string("channel")
+    t.nonNull.dateTime("createdAt");
+    t.nonNull.string("content");
+    t.nonNull.string("contentType");
+    t.string("inReplyTo");
+    t.string("app");
+    t.field("sentBy", {
+      type: "User",
+      resolve(parent, args, context) {
+        return context.prisma.message.findUnique({ where: { txid: parent.txid } })
+      }
+    })
+    
+  },
+})

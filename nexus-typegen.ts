@@ -5,8 +5,23 @@
 
 
 import type { Context } from "./src/context"
-
-
+import type { core } from "nexus"
+declare global {
+  interface NexusGenCustomInputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    dateTime<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
+  }
+}
+declare global {
+  interface NexusGenCustomOutputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    dateTime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
+  }
+}
 
 
 declare global {
@@ -25,38 +40,45 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  DateTime: any
 }
 
 export interface NexusGenObjects {
   Lock: { // root type
-    blockHeight?: number | null; // Int
-    id?: string | null; // String
-    satoshis?: number | null; // Int
-    txid?: string | null; // String
+    app?: string | null; // String
+    blockHeight: number; // Int!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
+    paymail?: string | null; // String
+    satoshis: number; // Int!
+    txid: string; // String!
   }
   Message: { // root type
     app?: string | null; // String
-    content?: string | null; // String
-    contentType?: string | null; // String
-    id?: string | null; // String
+    channel: string; // String!
+    content: string; // String!
+    contentType: string; // String!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
     inReplyTo?: string | null; // String
     paymail?: string | null; // String
-    txid?: string | null; // String
+    txid: string; // String!
   }
   Post: { // root type
     app?: string | null; // String
-    content?: string | null; // String
-    contentType?: string | null; // String
-    id?: string | null; // String
+    content: string; // String!
+    contentType: string; // String!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
     inReplyTo?: string | null; // String
-    paymail?: string | null; // String
-    txid?: string | null; // String
+    postedByUserPaymail?: string | null; // String
+    txid: string; // String!
   }
   Query: {};
   User: { // root type
-    address?: string | null; // String
-    id?: string | null; // String
-    paymail?: string | null; // String
+    address: string; // String!
+    id: number; // Int!
+    paymail: string; // String!
   }
 }
 
@@ -72,89 +94,85 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
   Lock: { // field return type
-    blockHeight: number | null; // Int
-    id: string | null; // String
-    message: NexusGenRootTypes['Message'] | null; // Message
-    post: NexusGenRootTypes['Post'] | null; // Post
-    satoshis: number | null; // Int
-    txid: string | null; // String
-    user: NexusGenRootTypes['User'] | null; // User
+    app: string | null; // String
+    blockHeight: number; // Int!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
+    paymail: string | null; // String
+    satoshis: number; // Int!
+    txid: string; // String!
   }
   Message: { // field return type
     app: string | null; // String
-    content: string | null; // String
-    contentType: string | null; // String
-    id: string | null; // String
+    channel: string; // String!
+    content: string; // String!
+    contentType: string; // String!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
     inReplyTo: string | null; // String
-    locks: Array<NexusGenRootTypes['Lock'] | null> | null; // [Lock]
     paymail: string | null; // String
-    txid: string | null; // String
-    user: NexusGenRootTypes['User'] | null; // User
+    txid: string; // String!
   }
   Post: { // field return type
     app: string | null; // String
-    content: string | null; // String
-    contentType: string | null; // String
-    id: string | null; // String
+    content: string; // String!
+    contentType: string; // String!
+    createdAt: NexusGenScalars['DateTime']; // DateTime!
+    id: number; // Int!
     inReplyTo: string | null; // String
-    locks: Array<NexusGenRootTypes['Lock'] | null> | null; // [Lock]
-    paymail: string | null; // String
-    txid: string | null; // String
-    user: NexusGenRootTypes['User'] | null; // User
+    postedBy: NexusGenRootTypes['User'] | null; // User
+    postedByUserPaymail: string | null; // String
+    txid: string; // String!
   }
   Query: { // field return type
     ok: boolean; // Boolean!
   }
   User: { // field return type
-    address: string | null; // String
-    id: string | null; // String
-    locks: Array<NexusGenRootTypes['Lock'] | null> | null; // [Lock]
-    messages: Array<NexusGenRootTypes['Message'] | null> | null; // [Message]
-    paymail: string | null; // String
-    posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    address: string; // String!
+    id: number; // Int!
+    paymail: string; // String!
+    posts: NexusGenRootTypes['Post'][]; // [Post!]!
   }
 }
 
 export interface NexusGenFieldTypeNames {
   Lock: { // field return type name
+    app: 'String'
     blockHeight: 'Int'
-    id: 'String'
-    message: 'Message'
-    post: 'Post'
+    createdAt: 'DateTime'
+    id: 'Int'
+    paymail: 'String'
     satoshis: 'Int'
     txid: 'String'
-    user: 'User'
   }
   Message: { // field return type name
     app: 'String'
+    channel: 'String'
     content: 'String'
     contentType: 'String'
-    id: 'String'
+    createdAt: 'DateTime'
+    id: 'Int'
     inReplyTo: 'String'
-    locks: 'Lock'
     paymail: 'String'
     txid: 'String'
-    user: 'User'
   }
   Post: { // field return type name
     app: 'String'
     content: 'String'
     contentType: 'String'
-    id: 'String'
+    createdAt: 'DateTime'
+    id: 'Int'
     inReplyTo: 'String'
-    locks: 'Lock'
-    paymail: 'String'
+    postedBy: 'User'
+    postedByUserPaymail: 'String'
     txid: 'String'
-    user: 'User'
   }
   Query: { // field return type name
     ok: 'Boolean'
   }
   User: { // field return type name
     address: 'String'
-    id: 'String'
-    locks: 'Lock'
-    messages: 'Message'
+    id: 'Int'
     paymail: 'String'
     posts: 'Post'
   }
