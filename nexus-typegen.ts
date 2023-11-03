@@ -37,9 +37,13 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  PostOrderByInput: { // input type
+    createdAt?: NexusGenEnums['Sort'] | null; // Sort
+  }
 }
 
 export interface NexusGenEnums {
+  Sort: "asc" | "desc"
 }
 
 export interface NexusGenScalars {
@@ -53,6 +57,11 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  Feed: { // root type
+    count: number; // Int!
+    id?: string | null; // ID
+    posts: NexusGenRootTypes['Post'][]; // [Post!]!
+  }
   Lock: { // root type
     app?: string | null; // String
     blockHeight: number; // Int!
@@ -73,6 +82,7 @@ export interface NexusGenObjects {
     inReplyTo?: string | null; // String
     txid: string; // String!
   }
+  Mutation: {};
   Post: { // root type
     app?: string | null; // String
     content: string; // String!
@@ -103,9 +113,14 @@ export interface NexusGenUnions {
 
 export type NexusGenRootTypes = NexusGenObjects
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
+  Feed: { // field return type
+    count: number; // Int!
+    id: string | null; // ID
+    posts: NexusGenRootTypes['Post'][]; // [Post!]!
+  }
   Lock: { // field return type
     app: string | null; // String
     blockHeight: number; // Int!
@@ -129,6 +144,9 @@ export interface NexusGenFieldTypes {
     sentBy: NexusGenRootTypes['User'] | null; // User
     txid: string; // String!
   }
+  Mutation: { // field return type
+    post: NexusGenRootTypes['Post']; // Post!
+  }
   Post: { // field return type
     app: string | null; // String
     content: string; // String!
@@ -140,7 +158,7 @@ export interface NexusGenFieldTypes {
     txid: string; // String!
   }
   Query: { // field return type
-    ok: boolean; // Boolean!
+    feed: NexusGenRootTypes['Feed']; // Feed!
   }
   Transaction: { // field return type
     block: number | null; // Int
@@ -162,6 +180,11 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  Feed: { // field return type name
+    count: 'Int'
+    id: 'ID'
+    posts: 'Post'
+  }
   Lock: { // field return type name
     app: 'String'
     blockHeight: 'Int'
@@ -185,6 +208,9 @@ export interface NexusGenFieldTypeNames {
     sentBy: 'User'
     txid: 'String'
   }
+  Mutation: { // field return type name
+    post: 'Post'
+  }
   Post: { // field return type name
     app: 'String'
     content: 'String'
@@ -196,7 +222,7 @@ export interface NexusGenFieldTypeNames {
     txid: 'String'
   }
   Query: { // field return type name
-    ok: 'Boolean'
+    feed: 'Feed'
   }
   Transaction: { // field return type name
     block: 'Int'
@@ -218,6 +244,25 @@ export interface NexusGenFieldTypeNames {
 }
 
 export interface NexusGenArgTypes {
+  Mutation: {
+    post: { // args
+      app?: string | null; // String
+      content: string; // String!
+      contentType: string; // String!
+      createdAt?: string | null; // String
+      inReplyTo?: string | null; // String
+      postedByUserPaymail: string; // String!
+      txid: string; // String!
+    }
+  }
+  Query: {
+    feed: { // args
+      filter?: string | null; // String
+      orderBy?: NexusGenInputs['PostOrderByInput'][] | null; // [PostOrderByInput!]
+      skip?: number | null; // Int
+      take?: number | null; // Int
+    }
+  }
 }
 
 export interface NexusGenAbstractTypeMembers {
@@ -228,9 +273,9 @@ export interface NexusGenTypeInterfaces {
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
-export type NexusGenInputNames = never;
+export type NexusGenInputNames = keyof NexusGenInputs;
 
-export type NexusGenEnumNames = never;
+export type NexusGenEnumNames = keyof NexusGenEnums;
 
 export type NexusGenInterfaceNames = never;
 

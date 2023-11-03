@@ -12,6 +12,12 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
+type Feed {
+  count: Int!
+  id: ID
+  posts: [Post!]!
+}
+
 type Lock {
   app: String
   blockHeight: Int!
@@ -37,6 +43,10 @@ type Message {
   txid: String!
 }
 
+type Mutation {
+  post(app: String, content: String!, contentType: String!, createdAt: String, inReplyTo: String, postedByUserPaymail: String!, txid: String!): Post!
+}
+
 type Post {
   app: String
   content: String!
@@ -48,8 +58,17 @@ type Post {
   txid: String!
 }
 
+input PostOrderByInput {
+  createdAt: Sort
+}
+
 type Query {
-  ok: Boolean!
+  feed(filter: String, orderBy: [PostOrderByInput!], skip: Int, take: Int): Feed!
+}
+
+enum Sort {
+  asc
+  desc
 }
 
 type Transaction {
