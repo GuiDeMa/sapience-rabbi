@@ -12,6 +12,10 @@ declare global {
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
     dateTime<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
+    /**
+     * The `BigInt` scalar type represents non-fractional signed whole numeric values.
+     */
+    bigint<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "BigInt";
   }
 }
 declare global {
@@ -20,6 +24,10 @@ declare global {
      * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
      */
     dateTime<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
+    /**
+     * The `BigInt` scalar type represents non-fractional signed whole numeric values.
+     */
+    bigint<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "BigInt";
   }
 }
 
@@ -40,6 +48,7 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  BigInt: any
   DateTime: any
 }
 
@@ -50,7 +59,7 @@ export interface NexusGenObjects {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
     paymail?: string | null; // String
-    satoshis: number; // Int!
+    satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
   }
   Message: { // root type
@@ -61,7 +70,6 @@ export interface NexusGenObjects {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
     inReplyTo?: string | null; // String
-    paymail?: string | null; // String
     txid: string; // String!
   }
   Post: { // root type
@@ -71,10 +79,14 @@ export interface NexusGenObjects {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
     inReplyTo?: string | null; // String
-    postedByUserPaymail?: string | null; // String
     txid: string; // String!
   }
   Query: {};
+  Transaction: { // root type
+    block?: number | null; // Int
+    hash: string; // String!
+    id: number; // Int!
+  }
   User: { // root type
     address: string; // String!
     id: number; // Int!
@@ -98,8 +110,9 @@ export interface NexusGenFieldTypes {
     blockHeight: number; // Int!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
+    locker: NexusGenRootTypes['User'] | null; // User
     paymail: string | null; // String
-    satoshis: number; // Int!
+    satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
   }
   Message: { // field return type
@@ -110,7 +123,7 @@ export interface NexusGenFieldTypes {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
     inReplyTo: string | null; // String
-    paymail: string | null; // String
+    sentBy: NexusGenRootTypes['User'] | null; // User
     txid: string; // String!
   }
   Post: { // field return type
@@ -121,15 +134,23 @@ export interface NexusGenFieldTypes {
     id: number; // Int!
     inReplyTo: string | null; // String
     postedBy: NexusGenRootTypes['User'] | null; // User
-    postedByUserPaymail: string | null; // String
     txid: string; // String!
   }
   Query: { // field return type
     ok: boolean; // Boolean!
   }
+  Transaction: { // field return type
+    block: number | null; // Int
+    hash: string; // String!
+    id: number; // Int!
+    message: NexusGenRootTypes['Message'] | null; // Message
+    post: NexusGenRootTypes['Post'] | null; // Post
+  }
   User: { // field return type
     address: string; // String!
     id: number; // Int!
+    locks: NexusGenRootTypes['Lock'][]; // [Lock!]!
+    messages: NexusGenRootTypes['Message'][]; // [Message!]!
     paymail: string; // String!
     posts: NexusGenRootTypes['Post'][]; // [Post!]!
   }
@@ -141,8 +162,9 @@ export interface NexusGenFieldTypeNames {
     blockHeight: 'Int'
     createdAt: 'DateTime'
     id: 'Int'
+    locker: 'User'
     paymail: 'String'
-    satoshis: 'Int'
+    satoshis: 'BigInt'
     txid: 'String'
   }
   Message: { // field return type name
@@ -153,7 +175,7 @@ export interface NexusGenFieldTypeNames {
     createdAt: 'DateTime'
     id: 'Int'
     inReplyTo: 'String'
-    paymail: 'String'
+    sentBy: 'User'
     txid: 'String'
   }
   Post: { // field return type name
@@ -164,15 +186,23 @@ export interface NexusGenFieldTypeNames {
     id: 'Int'
     inReplyTo: 'String'
     postedBy: 'User'
-    postedByUserPaymail: 'String'
     txid: 'String'
   }
   Query: { // field return type name
     ok: 'Boolean'
   }
+  Transaction: { // field return type name
+    block: 'Int'
+    hash: 'String'
+    id: 'Int'
+    message: 'Message'
+    post: 'Post'
+  }
   User: { // field return type name
     address: 'String'
     id: 'Int'
+    locks: 'Lock'
+    messages: 'Message'
     paymail: 'String'
     posts: 'Post'
   }

@@ -6,15 +6,15 @@ export const Lock = objectType({
     t.nonNull.int("id");
     t.nonNull.string("txid");
     t.nonNull.dateTime("createdAt");
-    t.nonNull.int("satoshis");
+    t.nonNull.bigint("satoshis");
     t.nonNull.int("blockHeight");
     t.string("app");
     t.string("paymail");
     t.field("locker", {
       type: "User",
       resolve(parent, args, context) {
-        return context.prisma.lock.findUnique({ where: { txid: parent.txid } })
+        return context.prisma.lock.findUnique({ where: { txid: parent.txid } }).locker()
       }
-    })
+    }) 
   },
 })

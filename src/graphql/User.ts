@@ -15,13 +15,13 @@ export const User = objectType({
     t.nonNull.list.nonNull.field("messages", {
       type: "Message",
       resolve(parent, args, context) {
-        return context.prisma.user.findUnique({ where: { paymail: parent.paymail }})
+        return context.prisma.user.findUnique({ where: { paymail: parent.paymail }}).messages()
       }
     })
     t.nonNull.list.nonNull.field("locks", { 
       type: "Lock",
       resolve(parent, args, context) {
-        return context.prisma.user.findUnique({ where: { address: parent.address } })
+        return context.prisma.user.findUnique({ where: { address: parent.address } }).locks()
       }
     })
   },

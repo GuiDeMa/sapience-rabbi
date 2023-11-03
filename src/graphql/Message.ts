@@ -14,7 +14,7 @@ export const Message = objectType({
     t.field("sentBy", {
       type: "User",
       resolve(parent, args, context) {
-        return context.prisma.message.findUnique({ where: { txid: parent.txid } })
+        return context.prisma.message.findUnique({ where: { txid: parent.txid } }).sentBy()
       }
     })
     

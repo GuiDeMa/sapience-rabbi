@@ -16,6 +16,5 @@ export const Post = objectType({
         return context.prisma.post.findUnique({ where: { txid: parent.txid } }).postedBy()
       }
     })
-    
   },
 })
