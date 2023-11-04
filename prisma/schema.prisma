@@ -13,7 +13,7 @@ generator client {
 model Transaction {
   id      Int      @id @default(autoincrement())
   hash    String   @unique
-  block   Int
+  block   Int?
   post    Post?    @relation(name: "Transactions")
   message Message? @relation(name: "Transactions")
   lock    Lock?    @relation(name: "Transactions")

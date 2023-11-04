@@ -69,7 +69,7 @@ export const PostQuery = extendType({
           | Prisma.Enumerable<Prisma.PostOrderByWithRelationInput>
           | undefined,
         })
-        const count = await context.prisma.post.findMany({ where })
+        const count = await context.prisma.post.count({ where })
         const id = `main-feed:${JSON.stringify(args)}`
 
         return {
@@ -89,6 +89,7 @@ interface NewPostProps {
   contentType: string;
   inReplyTo?: string;
   postedByUserPaymail: string;
+  postedByUserAddress: string;
   app?: string;
 }
 
@@ -106,25 +107,46 @@ export const PostMutation = extendType({
         postedByUserPaymail: nonNull(stringArg()),
         app: stringArg()
       },
-      resolve(parent, args: NewPostProps, context) {
-        const { txid, createdAt, content, contentType, inReplyTo, postedByUserPaymail, app } = args
+      async resolve(parent, args: NewPostProps, context) {
+        const { txid, createdAt, content, contentType, inReplyTo, postedByUserAddress, postedByUserPaymail, app } = args
         /* const { userId } = context;
-
+        
         if (!userId) {
             throw new Error("Cannot post without logging in.");
         } */
         
         const newPost = context.prisma.post.create({
           data: {
-            txid,
-            transaction: { connect: { hash: txid }},
+            transaction: {
+              connectOrCreate: {
+                where: {
+                  hash: txid
+                },
+                create: {
+                  hash: txid
+                }
+              }
+            },
             createdAt,
             content, 
             contentType, 
             inReplyTo, 
-            postedByUserPaymail,
-            postedBy: { connect: { paymail: postedByUserPaymail }} ,
+            postedBy: {
+              connectOrCreate: {
+                where: {
+                  paymail: postedByUserPaymail
+                },
+                create: {
+                  paymail: postedByUserPaymail,
+                  address: postedByUserAddress
+                }
+              }
+            } ,
             app
+          },
+          include: {
+            transaction: true,
+            postedBy: true
           }
         })
 
