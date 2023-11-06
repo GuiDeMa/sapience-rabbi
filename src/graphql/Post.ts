@@ -1,5 +1,6 @@
 import { inputObjectType, objectType, enumType, extendType, stringArg, intArg, arg, list, nonNull } from "nexus";
 import { Prisma } from "@prisma/client";
+import { Sort } from "./Sort";
 
 export const Post = objectType({
   name: "Post",
@@ -28,11 +29,6 @@ export const Feed = objectType({
     t.id("id")
   },
 })
-
-export const Sort = enumType({
-  name: "Sort",
-  members: ["asc", "desc"],
-});
 
 export const PostOrderByInput = inputObjectType({
   name: "PostOrderByInput",
@@ -70,7 +66,7 @@ export const PostQuery = extendType({
           | undefined,
         })
         const count = await context.prisma.post.count({ where })
-        const id = `main-feed:${JSON.stringify(args)}`
+        const id = `main-feed: ${JSON.stringify(args)}`
 
         return {
           posts,

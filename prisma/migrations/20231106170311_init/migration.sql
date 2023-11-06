@@ -2,7 +2,7 @@
 CREATE TABLE "Transaction" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "hash" TEXT NOT NULL,
-    "block" INTEGER NOT NULL
+    "block" INTEGER
 );
 
 -- CreateTable
@@ -35,7 +35,6 @@ CREATE TABLE "Message" (
     "content" TEXT NOT NULL,
     "contentType" TEXT NOT NULL,
     "inReplyTo" TEXT NOT NULL,
-    "paymail" TEXT NOT NULL,
     "app" TEXT NOT NULL,
     "sentByUserPaymail" TEXT,
     CONSTRAINT "Message_txid_fkey" FOREIGN KEY ("txid") REFERENCES "Transaction" ("hash") ON DELETE RESTRICT ON UPDATE CASCADE,

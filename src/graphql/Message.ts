@@ -1,4 +1,6 @@
-import { objectType } from "nexus";
+import { enumType, extendType, inputObjectType, intArg, arg, list, nonNull, objectType, stringArg } from "nexus";
+import { Sort } from "./Sort";
+import { Prisma } from "@prisma/client";
 
 export const Message = objectType({
   name: "Message",
@@ -18,5 +20,134 @@ export const Message = objectType({
       }
     })
     
+  },
+})
+
+export const Channel = objectType({
+  name: "Channel",
+  definition(t) {
+    t.nonNull.list.nonNull.field("messages", { type: "Message" })
+    t.nonNull.int("count")
+    t.id("id")
+  },
+})
+
+export const MessageOrderByInput = inputObjectType({
+  name: "MessageOrderByInput",
+  definition(t) {
+    t.field("createdAt", { type: Sort })
+  },
+})
+
+export const MessageQuery = extendType({
+  type: "Query",
+  definition(t) {
+    t.nonNull.field("channel", {
+      type: "Channel",
+      args: {
+        channel: nonNull(stringArg()),
+        filter: stringArg(),
+        skip: intArg(),
+        take: intArg(),
+        orderBy: arg({ type: list(nonNull(MessageOrderByInput))})
+      },
+      async resolve(parent, args, context) {
+        const where = { channel: args.channel } // TODO add filter
+        const messages = await context.prisma.message.findMany({
+          where,
+          skip: args?.skip as number | undefined,
+          take: args?.take as number | number,
+          orderBy: args?.orderBy as
+          | Prisma.Enumerable<Prisma.MessageOrderByWithRelationInput>
+          | undefined,
+        })
+        const count = await context.prisma.message.count({ where })
+        const id=`channel: ${JSON.stringify(args)}`
+
+        return {
+          messages,
+          count,
+          id
+        }
+      }
+    })
+  },
+})
+
+interface NewMessageProps {
+  txid: string;
+  createdAt: string;
+  content: string;
+  contentType: string;
+  inReplyTo?: string;
+  sentByUserPaymail: string;
+  sentByUserAddress: string;
+  app?: string;
+  channel: string;
+}
+
+export const MessageMutation = extendType({
+  type: "Mutation",
+  definition(t) {
+    t.nonNull.field("message", {
+      type: "Message",
+      args: {
+        txid: nonNull(stringArg()),
+        createdAt: stringArg(),
+        content: nonNull(stringArg()),
+        contentType: nonNull(stringArg()),
+        inReplyTo: stringArg(),
+        sentByUserPaymail: nonNull(stringArg()),
+        app: stringArg(),
+        channel: nonNull(stringArg())
+      },
+      async resolve(parent, args: NewMessageProps, context) {
+        const { txid, createdAt, content, contentType, inReplyTo, sentByUserPaymail, sentByUserAddress, app, channel } = args
+        
+        /* const { userId } = context;
+        
+        if (!userId) {
+            throw new Error("Cannot post without logging in.");
+        } */
+
+        const newMessage = context.prisma.message.create({
+          data: {
+            transaction: {
+              connectOrCreate: {
+                where: {
+                  hash: txid
+                },
+                create: {
+                  hash: txid
+                }
+              }
+            },
+            createdAt,
+            content,
+            contentType,
+            inReplyTo,
+            sentBy: {
+              connectOrCreate: {
+                where: {
+                  paymail: sentByUserPaymail
+                },
+                create: {
+                  paymail: sentByUserPaymail,
+                  address: sentByUserAddress
+                }
+              }
+            },
+            app,
+            channel
+          },
+          include: {
+            transaction: true,
+            sentBy: true
+          }
+        })
+
+        return newMessage
+      }
+    })
   },
 })

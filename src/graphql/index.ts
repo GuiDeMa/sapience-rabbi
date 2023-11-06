@@ -1,4 +1,5 @@
 export * from "./Transaction"
+export * from "./Sort"
 export * from "./Post"
 export * from "./Message"
 export * from "./Lock"

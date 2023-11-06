@@ -51,7 +51,6 @@ model Message {
   content           String
   contentType       String
   inReplyTo         String
-  paymail           String
   app               String
   sentBy            User?        @relation(name: "Messages", fields: [sentByUserPaymail], references: [paymail])
   sentByUserPaymail String?

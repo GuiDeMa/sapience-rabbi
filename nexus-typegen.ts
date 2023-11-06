@@ -37,6 +37,9 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  MessageOrderByInput: { // input type
+    createdAt?: NexusGenEnums['Sort'] | null; // Sort
+  }
   PostOrderByInput: { // input type
     createdAt?: NexusGenEnums['Sort'] | null; // Sort
   }
@@ -57,6 +60,11 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  Channel: { // root type
+    count: number; // Int!
+    id?: string | null; // ID
+    messages: NexusGenRootTypes['Message'][]; // [Message!]!
+  }
   Feed: { // root type
     count: number; // Int!
     id?: string | null; // ID
@@ -116,6 +124,11 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
+  Channel: { // field return type
+    count: number; // Int!
+    id: string | null; // ID
+    messages: NexusGenRootTypes['Message'][]; // [Message!]!
+  }
   Feed: { // field return type
     count: number; // Int!
     id: string | null; // ID
@@ -145,6 +158,7 @@ export interface NexusGenFieldTypes {
     txid: string; // String!
   }
   Mutation: { // field return type
+    message: NexusGenRootTypes['Message']; // Message!
     post: NexusGenRootTypes['Post']; // Post!
   }
   Post: { // field return type
@@ -158,6 +172,7 @@ export interface NexusGenFieldTypes {
     txid: string; // String!
   }
   Query: { // field return type
+    channel: NexusGenRootTypes['Channel']; // Channel!
     feed: NexusGenRootTypes['Feed']; // Feed!
   }
   Transaction: { // field return type
@@ -180,6 +195,11 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  Channel: { // field return type name
+    count: 'Int'
+    id: 'ID'
+    messages: 'Message'
+  }
   Feed: { // field return type name
     count: 'Int'
     id: 'ID'
@@ -209,6 +229,7 @@ export interface NexusGenFieldTypeNames {
     txid: 'String'
   }
   Mutation: { // field return type name
+    message: 'Message'
     post: 'Post'
   }
   Post: { // field return type name
@@ -222,6 +243,7 @@ export interface NexusGenFieldTypeNames {
     txid: 'String'
   }
   Query: { // field return type name
+    channel: 'Channel'
     feed: 'Feed'
   }
   Transaction: { // field return type name
@@ -245,6 +267,16 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    message: { // args
+      app?: string | null; // String
+      channel: string; // String!
+      content: string; // String!
+      contentType: string; // String!
+      createdAt?: string | null; // String
+      inReplyTo?: string | null; // String
+      sentByUserPaymail: string; // String!
+      txid: string; // String!
+    }
     post: { // args
       app?: string | null; // String
       content: string; // String!
@@ -256,6 +288,13 @@ export interface NexusGenArgTypes {
     }
   }
   Query: {
+    channel: { // args
+      channel: string; // String!
+      filter?: string | null; // String
+      orderBy?: NexusGenInputs['MessageOrderByInput'][] | null; // [MessageOrderByInput!]
+      skip?: number | null; // Int
+      take?: number | null; // Int
+    }
     feed: { // args
       filter?: string | null; // String
       orderBy?: NexusGenInputs['PostOrderByInput'][] | null; // [PostOrderByInput!]
