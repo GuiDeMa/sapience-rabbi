@@ -1,4 +1,4 @@
-import { objectType } from "nexus";
+import { extendType, intArg, nonNull, objectType, stringArg } from "nexus";
 
 export const Transaction= objectType({
     name: "Transaction",
@@ -31,4 +31,41 @@ export const Transaction= objectType({
             }
         })
     }
+})
+
+interface NewTransactionProps {
+    hash: string;
+    block?: number;
+}
+
+export const TransactionMutation = extendType({
+    type: "Mutation",
+    definition(t) {
+        t.nonNull.field("transaction", {
+            type: "Transaction",
+            args: {
+                hash: nonNull(stringArg()),
+                block: intArg()
+            },
+            async resolve(parent, args: NewTransactionProps, context) {
+                const { hash, block } = args
+
+                /* const { userId } = context;
+        
+                if (!userId) {
+                    throw new Error("Cannot post without logging in.");
+                } */
+
+                const newTransaction = context.prisma.transaction.create({
+                    data: {
+                        hash,
+                        block,
+                    }
+                    
+                })
+
+                return newTransaction
+            }
+        })
+    },
 })

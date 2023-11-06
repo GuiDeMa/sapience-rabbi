@@ -98,6 +98,8 @@ export const LockMutation = extendType({
             }
           }
         })
+
+        return newLock
       }
     })
   },
