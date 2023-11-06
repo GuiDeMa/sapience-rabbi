@@ -24,6 +24,12 @@ type Feed {
   posts: [Post!]!
 }
 
+type Leaderboard {
+  count: Int!
+  id: ID
+  users: [User!]!
+}
+
 type Lock {
   app: String
   blockHeight: Int!
@@ -54,8 +60,10 @@ input MessageOrderByInput {
 }
 
 type Mutation {
+  lock(blockHeight: Int!, createdAt: String, lockTargetByTxid: String!, lockerByUserAddress: String!, satoshis: Int!, txid: String!): Lock!
   message(app: String, channel: String!, content: String!, contentType: String!, createdAt: String, inReplyTo: String, sentByUserPaymail: String!, txid: String!): Message!
   post(app: String, content: String!, contentType: String!, createdAt: String, inReplyTo: String, postedByUserPaymail: String!, txid: String!): Post!
+  transaction(block: Int, hash: String!): Transaction!
 }
 
 type Post {
@@ -76,6 +84,7 @@ input PostOrderByInput {
 type Query {
   channel(channel: String!, filter: String, orderBy: [MessageOrderByInput!], skip: Int, take: Int): Channel!
   feed(filter: String, orderBy: [PostOrderByInput!], skip: Int, take: Int): Feed!
+  leaderboard(filter: String, orderBy: [UserOrderByInput!], skip: Int, take: Int): Leaderboard!
 }
 
 enum Sort {
@@ -100,4 +109,8 @@ type User {
   messages: [Message!]!
   paymail: String!
   posts: [Post!]!
+}
+
+input UserOrderByInput {
+  locks: Sort
 }

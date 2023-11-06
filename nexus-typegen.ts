@@ -43,6 +43,9 @@ export interface NexusGenInputs {
   PostOrderByInput: { // input type
     createdAt?: NexusGenEnums['Sort'] | null; // Sort
   }
+  UserOrderByInput: { // input type
+    locks?: NexusGenEnums['Sort'] | null; // Sort
+  }
 }
 
 export interface NexusGenEnums {
@@ -69,6 +72,11 @@ export interface NexusGenObjects {
     count: number; // Int!
     id?: string | null; // ID
     posts: NexusGenRootTypes['Post'][]; // [Post!]!
+  }
+  Leaderboard: { // root type
+    count: number; // Int!
+    id?: string | null; // ID
+    users: NexusGenRootTypes['User'][]; // [User!]!
   }
   Lock: { // root type
     app?: string | null; // String
@@ -134,6 +142,11 @@ export interface NexusGenFieldTypes {
     id: string | null; // ID
     posts: NexusGenRootTypes['Post'][]; // [Post!]!
   }
+  Leaderboard: { // field return type
+    count: number; // Int!
+    id: string | null; // ID
+    users: NexusGenRootTypes['User'][]; // [User!]!
+  }
   Lock: { // field return type
     app: string | null; // String
     blockHeight: number; // Int!
@@ -158,8 +171,10 @@ export interface NexusGenFieldTypes {
     txid: string; // String!
   }
   Mutation: { // field return type
+    lock: NexusGenRootTypes['Lock']; // Lock!
     message: NexusGenRootTypes['Message']; // Message!
     post: NexusGenRootTypes['Post']; // Post!
+    transaction: NexusGenRootTypes['Transaction']; // Transaction!
   }
   Post: { // field return type
     app: string | null; // String
@@ -174,6 +189,7 @@ export interface NexusGenFieldTypes {
   Query: { // field return type
     channel: NexusGenRootTypes['Channel']; // Channel!
     feed: NexusGenRootTypes['Feed']; // Feed!
+    leaderboard: NexusGenRootTypes['Leaderboard']; // Leaderboard!
   }
   Transaction: { // field return type
     block: number | null; // Int
@@ -205,6 +221,11 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     posts: 'Post'
   }
+  Leaderboard: { // field return type name
+    count: 'Int'
+    id: 'ID'
+    users: 'User'
+  }
   Lock: { // field return type name
     app: 'String'
     blockHeight: 'Int'
@@ -229,8 +250,10 @@ export interface NexusGenFieldTypeNames {
     txid: 'String'
   }
   Mutation: { // field return type name
+    lock: 'Lock'
     message: 'Message'
     post: 'Post'
+    transaction: 'Transaction'
   }
   Post: { // field return type name
     app: 'String'
@@ -245,6 +268,7 @@ export interface NexusGenFieldTypeNames {
   Query: { // field return type name
     channel: 'Channel'
     feed: 'Feed'
+    leaderboard: 'Leaderboard'
   }
   Transaction: { // field return type name
     block: 'Int'
@@ -267,6 +291,14 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    lock: { // args
+      blockHeight: number; // Int!
+      createdAt?: string | null; // String
+      lockTargetByTxid: string; // String!
+      lockerByUserAddress: string; // String!
+      satoshis: number; // Int!
+      txid: string; // String!
+    }
     message: { // args
       app?: string | null; // String
       channel: string; // String!
@@ -286,6 +318,10 @@ export interface NexusGenArgTypes {
       postedByUserPaymail: string; // String!
       txid: string; // String!
     }
+    transaction: { // args
+      block?: number | null; // Int
+      hash: string; // String!
+    }
   }
   Query: {
     channel: { // args
@@ -298,6 +334,12 @@ export interface NexusGenArgTypes {
     feed: { // args
       filter?: string | null; // String
       orderBy?: NexusGenInputs['PostOrderByInput'][] | null; // [PostOrderByInput!]
+      skip?: number | null; // Int
+      take?: number | null; // Int
+    }
+    leaderboard: { // args
+      filter?: string | null; // String
+      orderBy?: NexusGenInputs['UserOrderByInput'][] | null; // [UserOrderByInput!]
       skip?: number | null; // Int
       take?: number | null; // Int
     }
