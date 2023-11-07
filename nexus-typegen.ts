@@ -175,6 +175,7 @@ export interface NexusGenFieldTypes {
     message: NexusGenRootTypes['Message']; // Message!
     post: NexusGenRootTypes['Post']; // Post!
     transaction: NexusGenRootTypes['Transaction']; // Transaction!
+    user: NexusGenRootTypes['User']; // User!
   }
   Post: { // field return type
     app: string | null; // String
@@ -254,6 +255,7 @@ export interface NexusGenFieldTypeNames {
     message: 'Message'
     post: 'Post'
     transaction: 'Transaction'
+    user: 'User'
   }
   Post: { // field return type name
     app: 'String'
@@ -321,6 +323,10 @@ export interface NexusGenArgTypes {
     transaction: { // args
       block?: number | null; // Int
       hash: string; // String!
+    }
+    user: { // args
+      address: string; // String!
+      paymail: string; // String!
     }
   }
   Query: {

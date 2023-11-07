@@ -48,7 +48,7 @@ const onBlock = async ({
 
       console.log("lockup.block.discovered")
 
-      amqp.publish('sapience', 'lockup.transaction.discovered', Buffer.from(JSON.stringify({ txid:tx.hash, lockup, hex })))
+      amqp.publish('sapience', 'lockup.transaction.discovered', Buffer.from(JSON.stringify({ txid:tx.hash, lockup, lock_vout: vout, hex })))
       
     }
 
@@ -68,7 +68,7 @@ listener.on("mempool_tx", async ({ transaction, size }) => {
       
       console.log("lockup.mempool.discovered")
 
-      amqp.publish('sapience', 'lockup.transaction.discovered', Buffer.from(JSON.stringify({ txid:transaction.hash, lockup, hex })))
+      amqp.publish('sapience', 'lockup.transaction.discovered', Buffer.from(JSON.stringify({ txid:transaction.hash, lockup, lock_vout:vout, hex })))
     }
 
 
