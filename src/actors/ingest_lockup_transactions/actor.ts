@@ -13,9 +13,9 @@ export async function start(){
 
         exchange: 'sapience',
 
-        routingkey: 'lockup.transaction.discovered',
+        routingkey: 'mempool.lockup.transaction.discovered',
 
-        queue: 'ingest_lockup_transaction'
+        queue: 'ingest_mempool_lockup_transaction'
 
     })
     .start(async (channel, msg, json) => {
@@ -45,6 +45,104 @@ export async function start(){
                     create: {
                         hash: txid,
                         block: bmapTx.blk && bmapTx.blk.i
+                    }
+                }
+            } ,
+            lockTarget: {
+                connectOrCreate: {
+                    where: {
+                        hash: targetTxid
+                    },
+                    create: {
+                        hash: targetTxid
+                    }
+                }
+            },
+            locker: {
+                connectOrCreate: {
+                    where: {
+                        address: "lockerAddress"
+                    },
+                    create: {
+                        address: "lockerAddress",
+                    }
+                }
+            }
+        })
+        const response = await prisma.lock.create({
+            data: {
+                createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
+                satoshis: bsvTx.outputs[lock_vout].satoshis,
+                blockHeight: Number(lockup.lockUntilHeight),
+                transaction: {
+                    connectOrCreate: {
+                        where: {
+                            hash: txid
+                        },
+                        create: {
+                            hash: txid,
+                        }
+                    }
+                } ,
+                lockTarget: {
+                    connectOrCreate: {
+                        where: {
+                            hash: targetTxid
+                        },
+                        create: {
+                            hash: targetTxid
+                        }
+                    }
+                },
+                locker: {
+                    connectOrCreate: {
+                        where: {
+                            address: "lockerAddress"
+                        },
+                        create: {
+                            address: "lockerAddress",
+                        }
+                    }
+                }
+            }
+        })
+    })
+    Actor.create({
+
+        exchange: 'sapience',
+
+        routingkey: 'block.lockup.transaction.discovered',
+
+        queue: 'ingest_block_lockup_transaction'
+
+    })
+    .start(async (channel, msg, json) => {
+        
+        console.log("lockup.actor.started")
+        
+        const { txid, lockup, lock_vout, hex, blockHeight, blockHeader } = json
+
+        const bsvTx = new bsv.Transaction(hex)
+        const bmapTx = await bmapParseTransaction(hex)
+
+        let targetTxid = txid
+        if (bmapTx.MAP[0].type === "like"){
+            targetTxid = bmapTx.MAP[0].tx
+        }
+
+        // lock mutation here
+        console.log({
+            createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
+            satoshis: bsvTx.outputs[lock_vout].satoshis,
+            blockHeight: Number(lockup.lockUntilHeight),
+            transaction: {
+                connectOrCreate: {
+                    where: {
+                        hash: txid
+                    },
+                    create: {
+                        hash: txid,
+                        block: blockHeader
                     }
                 }
             } ,

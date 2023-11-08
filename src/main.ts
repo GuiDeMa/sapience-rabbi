@@ -3,7 +3,7 @@ import config from './config'
 
 import { start as server } from './server'
 
-import { start as lockupActor } from "./actors/ingest_lockup.transactions/actor"
+import { start as lockupActor } from "./actors/ingest_lockup_transactions/actor"
 
 export async function start() {
 

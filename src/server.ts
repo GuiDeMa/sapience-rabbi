@@ -13,6 +13,7 @@ import { ApolloServer, BaseContext } from "@apollo/server";
 
 import hapiApollo from "@as-integrations/hapi";
 
+
 const Joi = require('joi')
 
 const Pack = require('../package');
@@ -74,6 +75,12 @@ server.route({
   }
 })
 
+server.route({
+  method: 'GET',
+  path: '/lockstream',
+  handler: handlers.Locks.events
+});
+
 var started = false
 
 export async function start() {
@@ -102,6 +109,8 @@ export async function start() {
 
     const HapiSwagger = require('hapi-swagger');
 
+    const Susie = require("susie")
+
     const apolloServer = new ApolloServer({
       schema,
     })
@@ -111,6 +120,7 @@ export async function start() {
     await server.register([
         Inert,
         Vision,
+        Susie,
         {
           plugin: HapiSwagger,
           options: swaggerOptions
@@ -129,6 +139,7 @@ export async function start() {
 
     log.info('server.api.documentation.swagger', swaggerOptions)
   }
+
 
   await server.start();
 
