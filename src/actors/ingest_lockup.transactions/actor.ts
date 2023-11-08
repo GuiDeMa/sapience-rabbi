@@ -33,6 +33,42 @@ export async function start(){
         }
 
         // lock mutation here
+        console.log({
+            createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
+            satoshis: bsvTx.outputs[lock_vout].satoshis,
+            blockHeight: Number(lockup.lockUntilHeight),
+            transaction: {
+                connectOrCreate: {
+                    where: {
+                        hash: txid
+                    },
+                    create: {
+                        hash: txid,
+                        block: bmapTx.blk && bmapTx.blk.i
+                    }
+                }
+            } ,
+            lockTarget: {
+                connectOrCreate: {
+                    where: {
+                        hash: targetTxid
+                    },
+                    create: {
+                        hash: targetTxid
+                    }
+                }
+            },
+            locker: {
+                connectOrCreate: {
+                    where: {
+                        address: "lockerAddress"
+                    },
+                    create: {
+                        address: "lockerAddress",
+                    }
+                }
+            }
+        })
         const response = await prisma.lock.create({
             data: {
                 createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
@@ -66,7 +102,6 @@ export async function start(){
                         },
                         create: {
                             address: "lockerAddress",
-                            paymail: "lockerPaymail"
                         }
                     }
                 }

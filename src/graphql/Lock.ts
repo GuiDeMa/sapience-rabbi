@@ -52,7 +52,7 @@ export const LockMutation = extendType({
         lockerByUserAddress: nonNull(stringArg())
       },
       async resolve(parent, args: NewLockProps, context) {
-        const { txid, createdAt, satoshis, blockHeight, lockTargetByTxid, lockerByUserAddress, lockerByUserPaymail } = args
+        const { txid, createdAt, satoshis, blockHeight, lockTargetByTxid, lockerByUserAddress } = args
 
         /* const { userId } = context;
         
@@ -92,7 +92,6 @@ export const LockMutation = extendType({
                 },
                 create: {
                   address: lockerByUserAddress,
-                  paymail: lockerByUserPaymail
                 }
               }
             }
