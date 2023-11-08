@@ -8,17 +8,16 @@ export const User = objectType({
   definition(t) {
     t.nonNull.int("id")
     t.nonNull.string("address")
-    t.nonNull.string("paymail")
     t.nonNull.list.nonNull.field("posts", {
       type: "Post",
       resolve(parent, args, context) {
-        return context.prisma.user.findUnique({ where: { paymail : parent.paymail } }).posts()
+        return context.prisma.user.findUnique({ where: { address : parent.address } }).posts()
       }
     })
     t.nonNull.list.nonNull.field("messages", {
       type: "Message",
       resolve(parent, args, context) {
-        return context.prisma.user.findUnique({ where: { paymail: parent.paymail }}).messages()
+        return context.prisma.user.findUnique({ where: { address: parent.address }}).messages()
       }
     })
     t.nonNull.list.nonNull.field("locks", { 
@@ -59,7 +58,7 @@ export const UserQuery = extendType({
       },
       async resolve(parent, args, context) {
         const where ={
-          paymail: { contains: args.filter }
+          //paymail: { contains: args.filter }
         } 
 
         const users = await context.prisma.user.findMany({
@@ -86,7 +85,6 @@ export const UserQuery = extendType({
 
 interface NewUserProps {
   address: string;
-  paymail: string;
 }
 
 export const UserMutation = extendType({
@@ -96,10 +94,9 @@ export const UserMutation = extendType({
       type: "User",
       args: {
         address: nonNull(stringArg()),
-        paymail: nonNull(stringArg())
       },
       async resolve(parent, args: NewUserProps, context) {
-        const { address, paymail } = args
+        const { address } = args
 
         /* const { userId } = context;
         
@@ -110,7 +107,6 @@ export const UserMutation = extendType({
         const newUser = context.prisma.user.create({
           data: {
             address,
-            paymail,
           }
         })
 

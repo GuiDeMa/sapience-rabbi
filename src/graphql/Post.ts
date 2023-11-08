@@ -49,14 +49,8 @@ export const PostQuery = extendType({
         orderBy: arg({ type: list(nonNull(PostOrderByInput))})
       },
       async resolve(parent, args, context) {
-        const where = args.filter ?{
-          OR: [
-            { content: { contains: args.filter }},
-            { postedBy: {
-              paymail: { contains: args.filter }
-            }}
-          ]
-        } : {}
+        const where = args.filter ?
+            { content: { contains: args.filter }} : {}
         const posts = await context.prisma.post.findMany({
           where,
           skip: args?.skip as number | undefined,
@@ -84,7 +78,6 @@ interface NewPostProps {
   content: string;
   contentType: string;
   inReplyTo?: string;
-  postedByUserPaymail: string;
   postedByUserAddress: string;
   app?: string;
 }
@@ -100,11 +93,11 @@ export const PostMutation = extendType({
         content: nonNull(stringArg()),
         contentType: nonNull(stringArg()),
         inReplyTo: stringArg(),
-        postedByUserPaymail: nonNull(stringArg()),
+        postedByUserAddress: nonNull(stringArg()),
         app: stringArg()
       },
       async resolve(parent, args: NewPostProps, context) {
-        const { txid, createdAt, content, contentType, inReplyTo, postedByUserAddress, postedByUserPaymail, app } = args
+        const { txid, createdAt, content, contentType, inReplyTo, postedByUserAddress, app } = args
         /* const { userId } = context;
         
         if (!userId) {
@@ -130,10 +123,9 @@ export const PostMutation = extendType({
             postedBy: {
               connectOrCreate: {
                 where: {
-                  paymail: postedByUserPaymail
+                  address: postedByUserAddress
                 },
                 create: {
-                  paymail: postedByUserPaymail,
                   address: postedByUserAddress
                 }
               }

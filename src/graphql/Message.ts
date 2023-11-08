@@ -97,12 +97,12 @@ export const MessageMutation = extendType({
         content: nonNull(stringArg()),
         contentType: nonNull(stringArg()),
         inReplyTo: stringArg(),
-        sentByUserPaymail: nonNull(stringArg()),
+        sentByUserAddress: nonNull(stringArg()),
         app: stringArg(),
         channel: nonNull(stringArg())
       },
       async resolve(parent, args: NewMessageProps, context) {
-        const { txid, createdAt, content, contentType, inReplyTo, sentByUserPaymail, sentByUserAddress, app, channel } = args
+        const { txid, createdAt, content, contentType, inReplyTo, sentByUserAddress, app, channel } = args
         
         /* const { userId } = context;
         
@@ -129,10 +129,9 @@ export const MessageMutation = extendType({
             sentBy: {
               connectOrCreate: {
                 where: {
-                  paymail: sentByUserPaymail
+                  address: sentByUserAddress
                 },
                 create: {
-                  paymail: sentByUserPaymail,
                   address: sentByUserAddress
                 }
               }

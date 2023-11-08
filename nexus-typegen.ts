@@ -117,7 +117,6 @@ export interface NexusGenObjects {
   User: { // root type
     address: string; // String!
     id: number; // Int!
-    paymail: string; // String!
   }
 }
 
@@ -206,7 +205,6 @@ export interface NexusGenFieldTypes {
     id: number; // Int!
     locks: NexusGenRootTypes['Lock'][]; // [Lock!]!
     messages: NexusGenRootTypes['Message'][]; // [Message!]!
-    paymail: string; // String!
     posts: NexusGenRootTypes['Post'][]; // [Post!]!
   }
 }
@@ -286,7 +284,6 @@ export interface NexusGenFieldTypeNames {
     id: 'Int'
     locks: 'Lock'
     messages: 'Message'
-    paymail: 'String'
     posts: 'Post'
   }
 }
@@ -308,7 +305,7 @@ export interface NexusGenArgTypes {
       contentType: string; // String!
       createdAt?: string | null; // String
       inReplyTo?: string | null; // String
-      sentByUserPaymail: string; // String!
+      sentByUserAddress: string; // String!
       txid: string; // String!
     }
     post: { // args
@@ -317,7 +314,7 @@ export interface NexusGenArgTypes {
       contentType: string; // String!
       createdAt?: string | null; // String
       inReplyTo?: string | null; // String
-      postedByUserPaymail: string; // String!
+      postedByUserAddress: string; // String!
       txid: string; // String!
     }
     transaction: { // args
@@ -326,7 +323,6 @@ export interface NexusGenArgTypes {
     }
     user: { // args
       address: string; // String!
-      paymail: string; // String!
     }
   }
   Query: {

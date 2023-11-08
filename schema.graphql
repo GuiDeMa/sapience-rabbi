@@ -61,10 +61,10 @@ input MessageOrderByInput {
 
 type Mutation {
   lock(blockHeight: Int!, createdAt: String, lockTargetByTxid: String!, lockerByUserAddress: String!, satoshis: Int!, txid: String!): Lock!
-  message(app: String, channel: String!, content: String!, contentType: String!, createdAt: String, inReplyTo: String, sentByUserPaymail: String!, txid: String!): Message!
-  post(app: String, content: String!, contentType: String!, createdAt: String, inReplyTo: String, postedByUserPaymail: String!, txid: String!): Post!
+  message(app: String, channel: String!, content: String!, contentType: String!, createdAt: String, inReplyTo: String, sentByUserAddress: String!, txid: String!): Message!
+  post(app: String, content: String!, contentType: String!, createdAt: String, inReplyTo: String, postedByUserAddress: String!, txid: String!): Post!
   transaction(block: Int, hash: String!): Transaction!
-  user(address: String!, paymail: String!): User!
+  user(address: String!): User!
 }
 
 type Post {
@@ -108,7 +108,6 @@ type User {
   id: Int!
   locks: [Lock!]!
   messages: [Message!]!
-  paymail: String!
   posts: [Post!]!
 }
 
