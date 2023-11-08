@@ -47,6 +47,7 @@
       "scrypt-ts": "^1.3.16",
       "sequelize": "^6.33.0",
       "sequelize-cli": "^6.6.1",
+      "susie": "^3.0.0",
       "winston": "^3.3.3",
       "ws": "^8.2.0"
    },

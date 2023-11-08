@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 
 const { Listener } = require("bsv-spv");
 
@@ -9,24 +9,21 @@ const dataDir = __dirname;
 const port = 8080; // Same as Masters port above
 const listener = new Listener({ name, ticker, blockHeight, dataDir });
 
-const { connect } = require('amqplib')
+const { connect } = require("amqplib");
 
 import { detectLockupFromTxHex } from "../src/contracts/lockup";
 
 var amqp;
 
 async function startAmqp() {
+  const connection = await connect(process.env.amqp_url);
 
-	const connection = await connect(process.env.amqp_url)
+  amqp = await connection.createChannel();
 
-	amqp = await connection.createChannel()
-
-	await amqp.assertExchange('sapience')
-
+  await amqp.assertExchange("sapience");
 }
 
-startAmqp()
-
+startAmqp();
 
 const onBlock = async ({
   header,
@@ -39,43 +36,54 @@ const onBlock = async ({
   startDate,
 }) => {
   for (const [index, tx, pos, len] of transactions) {
+    const hex = tx.toHex();
 
-    const hex = tx.toHex()
+    let [lockup, vout] = await detectLockupFromTxHex(hex);
 
-    let [lockup, vout] = await detectLockupFromTxHex(hex)
+    if (lockup) {
+      console.log("lockup.block.discovered");
 
-    if(lockup){
-
-      console.log("lockup.block.discovered")
-
-      amqp.publish('sapience', 'lockup.transaction.discovered', Buffer.from(JSON.stringify({ txid:tx.hash, lockup, lock_vout: vout, hex })))
-      
+      amqp.publish(
+        "sapience",
+        "block.lockup.transaction.discovered",
+        Buffer.from(
+          JSON.stringify({
+            txid: tx.hash,
+            lockup,
+            lock_vout: vout,
+            hex,
+            blockHeight: height,
+            blockHeader: header,
+          })
+        )
+      );
     }
-
-
   }
 };
 
 listener.on("mempool_tx", async ({ transaction, size }) => {
+  try {
+    const hex = transaction.toHex();
 
-	try {
+    let [lockup, vout] = await detectLockupFromTxHex(hex);
 
-    const hex = transaction.toHex()
+    if (lockup) {
+      console.log("lockup.mempool.discovered");
 
-    let [lockup, vout] = await detectLockupFromTxHex(hex)
-
-    if(lockup){
-      
-      console.log("lockup.mempool.discovered")
-
-      amqp.publish('sapience', 'lockup.transaction.discovered', Buffer.from(JSON.stringify({ txid:transaction.hash, lockup, lock_vout:vout, hex })))
+      amqp.publish(
+        "sapience",
+        "mempool.lockup.transaction.discovered",
+        Buffer.from(
+          JSON.stringify({
+            txid: transaction.hash,
+            lockup,
+            lock_vout: vout,
+            hex,
+          })
+        )
+      );
     }
-
-
-	} catch(error) {
-
-	}
-
+  } catch (error) {}
 });
 listener.on("block_reorg", ({ height, hash }) => {
   // Re-org after height
