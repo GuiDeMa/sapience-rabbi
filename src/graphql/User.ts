@@ -58,7 +58,6 @@ export const UserQuery = extendType({
       },
       async resolve(parent, args, context) {
         const where ={
-          //paymail: { contains: args.filter }
         } 
 
         const users = await context.prisma.user.findMany({

@@ -84,7 +84,6 @@ export interface NexusGenObjects {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
     lockTargetByTxid: string; // String!
-    paymail?: string | null; // String
     satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
   }
@@ -154,7 +153,6 @@ export interface NexusGenFieldTypes {
     lockTarget: NexusGenRootTypes['Transaction'] | null; // Transaction
     lockTargetByTxid: string; // String!
     locker: NexusGenRootTypes['User']; // User!
-    paymail: string | null; // String
     satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
   }
@@ -233,7 +231,6 @@ export interface NexusGenFieldTypeNames {
     lockTarget: 'Transaction'
     lockTargetByTxid: 'String'
     locker: 'User'
-    paymail: 'String'
     satoshis: 'BigInt'
     txid: 'String'
   }

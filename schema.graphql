@@ -38,7 +38,6 @@ type Lock {
   lockTarget: Transaction
   lockTargetByTxid: String!
   locker: User!
-  paymail: String
   satoshis: BigInt!
   txid: String!
 }

@@ -80,7 +80,6 @@ interface NewMessageProps {
   content: string;
   contentType: string;
   inReplyTo?: string;
-  sentByUserPaymail: string;
   sentByUserAddress: string;
   app?: string;
   channel: string;

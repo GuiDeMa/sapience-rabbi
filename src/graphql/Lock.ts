@@ -9,7 +9,6 @@ export const Lock = objectType({
     t.nonNull.bigint("satoshis");
     t.nonNull.int("blockHeight");
     t.string("app");
-    t.string("paymail");
     t.nonNull.field("locker", {
       type: "User",
       resolve(parent, args, context) {
@@ -35,7 +34,6 @@ interface NewLockProps {
   blockHeight: number;
   lockTargetByTxid: string;
   lockerByUserAddress: string;
-  lockerByUserPaymail: string;
 }
 
 export const LockMutation = extendType({
