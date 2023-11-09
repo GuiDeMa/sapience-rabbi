@@ -25,6 +25,7 @@ const handlers = load(join(__dirname, './server/handlers'))
 import { schema } from './schema'
 
 import { context } from "./context"
+import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core'
 
 export const server = new Server({
   host: config.get('host'),
@@ -78,7 +79,13 @@ server.route({
 server.route({
   method: 'GET',
   path: '/lockstream',
-  handler: handlers.Locks.events
+  handler: handlers.Sse.locks
+});
+
+server.route({
+  method: 'GET',
+  path: '/blockstream',
+  handler: handlers.Sse.blocks
 });
 
 var started = false
@@ -113,6 +120,7 @@ export async function start() {
 
     const apolloServer = new ApolloServer({
       schema,
+      introspection: true,
     })
   
     await apolloServer.start()
@@ -128,6 +136,7 @@ export async function start() {
         { 
           plugin: hapiApollo,
           options: {
+            plugins: [ApolloServerPluginLandingPageLocalDefault()],
             context: async ({ request }) => {
               return context({ req:request })
             },

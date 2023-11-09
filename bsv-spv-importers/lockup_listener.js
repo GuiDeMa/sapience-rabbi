@@ -35,6 +35,23 @@ const onBlock = async ({
   transactions,
   startDate,
 }) => {
+
+  if(finished){
+    amqp.publish(
+      "sapience",
+      "spv.block.synced",
+      Buffer.from(
+        JSON.stringify({
+          header, 
+          txCount,
+          size,
+          height,
+          startDate
+        })
+      )
+    );
+  }
+
   for (const [index, tx, pos, len] of transactions) {
     const hex = tx.toHex();
 

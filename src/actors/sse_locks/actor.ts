@@ -1,7 +1,7 @@
 require("dotenv").config()
 
 import { Actor, log } from "rabbi"
-import {stream} from "../../server/handlers/locks"
+import {stream} from "../../server/handlers/sse"
 
 export async function start() {
 

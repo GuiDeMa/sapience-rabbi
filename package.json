@@ -28,6 +28,7 @@
       "@hapi/joi": "^17.1.1",
       "@hapi/vision": "^6.1.0",
       "@prisma/client": "^5.5.2",
+      "apollo-server-core": "^3.12.1",
       "bcryptjs": "^2.4.3",
       "bmapjs": "^0.4.0-beta.42",
       "commander": "^9.3.0",
