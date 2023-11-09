@@ -16,7 +16,7 @@ module.exports = {
       },
       {
         name: 'lockup_listener',
-        script: './lockup-listener.js',
+        script: './lockup_listener.js',
         instances: 1,
         autorestart: true,
         watch: false,
