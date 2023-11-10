@@ -11,8 +11,8 @@ export async function start() {
         queue: 'sse_lockup_transaction'
     })
     .start(async (channel, msg, json) => {
-        const { txid, lockup, lock_vout, hex } = json
-        stream.write({ data:{ txid, lockup, lock_vout, hex }} )
+        const { txid, address, satoshis, lockUntilHeight, hex } = json
+        stream.write({ data: { txid, address, satoshis, lockUntilHeight, hex }} )
     })
 }
 

@@ -22,7 +22,7 @@ export async function start(){
         
         console.log("lockup.actor.started")
         
-        const { txid, lockup, lock_vout, hex } = json
+        const { txid, address, satoshis, lockUntilHeight, hex } = json
 
         const bsvTx = new bsv.Transaction(hex)
         const bmapTx = await bmapParseTransaction(hex)
@@ -32,48 +32,10 @@ export async function start(){
             targetTxid = bmapTx.MAP[0].tx
         }
 
-        // lock mutation here
-        console.log({
-            createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
-            satoshis: bsvTx.outputs[lock_vout].satoshis,
-            blockHeight: Number(lockup.lockUntilHeight),
-            transaction: {
-                connectOrCreate: {
-                    where: {
-                        hash: txid
-                    },
-                    create: {
-                        hash: txid,
-                        block: bmapTx.blk && bmapTx.blk.i
-                    }
-                }
-            } ,
-            lockTarget: {
-                connectOrCreate: {
-                    where: {
-                        hash: targetTxid
-                    },
-                    create: {
-                        hash: targetTxid
-                    }
-                }
-            },
-            locker: {
-                connectOrCreate: {
-                    where: {
-                        address: "lockerAddress"
-                    },
-                    create: {
-                        address: "lockerAddress",
-                    }
-                }
-            }
-        })
         const response = await prisma.lock.create({
             data: {
-                createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
-                satoshis: bsvTx.outputs[lock_vout].satoshis,
-                blockHeight: Number(lockup.lockUntilHeight),
+                satoshis,
+                blockHeight: lockUntilHeight,
                 transaction: {
                     connectOrCreate: {
                         where: {
@@ -97,10 +59,10 @@ export async function start(){
                 locker: {
                     connectOrCreate: {
                         where: {
-                            address: "lockerAddress"
+                            address: address
                         },
                         create: {
-                            address: "lockerAddress",
+                            address: address,
                         }
                     }
                 }
@@ -120,7 +82,7 @@ export async function start(){
         
         console.log("lockup.actor.started")
         
-        const { txid, lockup, lock_vout, hex, blockHeight, blockHeader } = json
+        const { txid, address, satoshis, lockUntilHeight, hex, blockHeight, blockHeader } = json
 
         const bsvTx = new bsv.Transaction(hex)
         const bmapTx = await bmapParseTransaction(hex)
@@ -130,48 +92,12 @@ export async function start(){
             targetTxid = bmapTx.MAP[0].tx
         }
 
-        // lock mutation here
-        console.log({
-            createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
-            satoshis: bsvTx.outputs[lock_vout].satoshis,
-            blockHeight: Number(lockup.lockUntilHeight),
-            transaction: {
-                connectOrCreate: {
-                    where: {
-                        hash: txid
-                    },
-                    create: {
-                        hash: txid,
-                        block: blockHeader
-                    }
-                }
-            } ,
-            lockTarget: {
-                connectOrCreate: {
-                    where: {
-                        hash: targetTxid
-                    },
-                    create: {
-                        hash: targetTxid
-                    }
-                }
-            },
-            locker: {
-                connectOrCreate: {
-                    where: {
-                        address: "lockerAddress"
-                    },
-                    create: {
-                        address: "lockerAddress",
-                    }
-                }
-            }
-        })
+        
         const response = await prisma.lock.create({
             data: {
                 createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
-                satoshis: bsvTx.outputs[lock_vout].satoshis,
-                blockHeight: Number(lockup.lockUntilHeight),
+                satoshis,
+                blockHeight: lockUntilHeight,
                 transaction: {
                     connectOrCreate: {
                         where: {
@@ -179,7 +105,7 @@ export async function start(){
                         },
                         create: {
                             hash: txid,
-                            block: bmapTx.blk && bmapTx.blk.i
+                            block: blockHeight
                         }
                     }
                 } ,
@@ -196,10 +122,10 @@ export async function start(){
                 locker: {
                     connectOrCreate: {
                         where: {
-                            address: "lockerAddress"
+                            address: address
                         },
                         create: {
-                            address: "lockerAddress",
+                            address: address,
                         }
                     }
                 }
