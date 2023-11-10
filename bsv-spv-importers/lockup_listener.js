@@ -11,7 +11,7 @@ const listener = new Listener({ name, ticker, blockHeight, dataDir });
 
 const { connect } = require("amqplib");
 
-import { detectLockupFromTxHex } from "../src/contracts/lockup";
+const detectLockupFromTxHex = require("../src/contracts/lockup");
 
 var amqp;
 
