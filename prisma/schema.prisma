@@ -30,8 +30,8 @@ model User {
 
 model Post {
   id                  Int          @id @default(autoincrement())
-  txid                String?       @unique
-  transaction         Transaction? @relation(name: "Transactions", fields: [txid], references: [hash])
+  txid                String       @unique
+  transaction         Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
   createdAt           DateTime     @default(now())
   content             String
   contentType         String
@@ -43,8 +43,8 @@ model Post {
 
 model Message {
   id                Int          @id @default(autoincrement())
-  txid              String?       @unique
-  transaction       Transaction? @relation(name: "Transactions", fields: [txid], references: [hash])
+  txid              String       @unique
+  transaction       Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
   createdAt         DateTime     @default(now())
   channel           String       @unique
   content           String
@@ -57,13 +57,13 @@ model Message {
 
 model Lock {
   id                  Int          @id @default(autoincrement())
-  txid                String?      @unique
-  transaction         Transaction? @relation(name: "Transactions", fields: [txid], references: [hash])
+  txid                String      @unique
+  transaction         Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
   createdAt           DateTime     @default(now())
   satoshis            BigInt
   blockHeight         Int
-  lockTarget          Transaction? @relation(name: "LockTo", fields: [lockTargetByTxid], references: [hash]) // Can be Post or Message
-  lockTargetByTxid    String?
-  locker              User?        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
-  lockerByUserAddress String?
+  lockTarget          Transaction @relation(name: "LockTo", fields: [lockTargetByTxid], references: [hash]) // Can be Post or Message
+  lockTargetByTxid    String
+  locker              User        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
+  lockerByUserAddress String
 }
