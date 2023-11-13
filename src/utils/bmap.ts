@@ -10,10 +10,9 @@ export async function bmapParseTransaction(txhex: string){
 
 export async function ingestBmapTransaction(bmapTx) {
     let response
-    console.log(bmapTx.in)
-    if (!bmapTx.t.h){
-        return null
-    }
+    const txid = bmapTx.tx.h
+    const address = bmapTx.in[0].e.a
+    console.log({ txid, address })
     if (bmapTx.MAP[0].type === "post"){
         const newPost = await prisma.post.create({
             data: {
@@ -70,10 +69,10 @@ export async function ingestBmapTransaction(bmapTx) {
                 sentBy: {
                     connectOrCreate: {
                         where: {
-                            address: ""
+                            address: bmapTx.in[0].e.a
                         },
                         create: {
-                            address: ""
+                            address: bmapTx.in[0].e.a
                         }
                     },
                 },
