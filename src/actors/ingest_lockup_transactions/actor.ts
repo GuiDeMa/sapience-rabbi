@@ -98,13 +98,15 @@ export async function start(){
         const bmapTx = await bmapParseTransaction(hex)
 
         let targetTxid = txid
-        if (bmapTx.MAP[0].type === "like"){
-            targetTxid = bmapTx.MAP[0].tx
-            const targetTxHex = await fetchTransaction({ txid: targetTxid})
-            const targetBmapTx = await bmapParseTransaction(targetTxHex)
-            const ingestContentResponse = await ingestBmapTransaction(targetBmapTx)
-        } else {
-            const ingestContentResponse = await ingestBmapTransaction(bmapTx)
+        if (bmapTx.MAP){
+            if (bmapTx.MAP[0].type === "like"){
+                targetTxid = bmapTx.MAP[0].tx
+                const targetTxHex = await fetchTransaction({ txid: targetTxid})
+                const targetBmapTx = await bmapParseTransaction(targetTxHex)
+                const ingestContentResponse = await ingestBmapTransaction(targetBmapTx)
+            } else {
+                const ingestContentResponse = await ingestBmapTransaction(bmapTx)
+            }
         }
 
         
