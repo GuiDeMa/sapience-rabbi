@@ -10,6 +10,7 @@ export async function bmapParseTransaction(txhex: string){
 
 export async function ingestBmapTransaction(bmapTx) {
     let response
+    console.log(bmapTx)
     if (bmapTx.MAP[0].type === "post"){
         const newPost = await prisma.post.create({
             data: {
