@@ -6,6 +6,7 @@ import { Actor, log } from 'rabbi';
 import { prisma } from '../../context';
 import { bmapParseTransaction } from '../../utils/bmap';
 import { bsv } from 'scrypt-ts';
+import { fetchTransaction } from '../../utils/whatsonchain';
 
 export async function start(){
 
@@ -92,6 +93,11 @@ export async function start(){
         let targetTxid = txid
         if (bmapTx.MAP[0].type === "like"){
             targetTxid = bmapTx.MAP[0].tx
+            const targetTxHex = await fetchTransaction(targetTxid)
+            const targetBmapTx = await bmapParseTransaction(targetTxHex)
+            
+        } else {
+
         }
 
         
