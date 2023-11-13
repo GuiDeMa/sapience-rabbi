@@ -30,7 +30,7 @@ model User {
 
 model Post {
   id                  Int          @id @default(autoincrement())
-  txid                String       @unique
+  txid                String?       @unique
   transaction         Transaction? @relation(name: "Transactions", fields: [txid], references: [hash])
   createdAt           DateTime     @default(now())
   content             String
@@ -43,7 +43,7 @@ model Post {
 
 model Message {
   id                Int          @id @default(autoincrement())
-  txid              String       @unique
+  txid              String?       @unique
   transaction       Transaction? @relation(name: "Transactions", fields: [txid], references: [hash])
   createdAt         DateTime     @default(now())
   channel           String       @unique

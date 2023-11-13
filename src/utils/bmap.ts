@@ -13,7 +13,7 @@ export async function ingestBmapTransaction(bmapTx) {
     let response
     const txid = bmapTx.tx.h
     const address = bmapTx.in[0].e.a
-    console.log({ txid, address })
+    console.log(bmapTx)
     if (bmapTx.MAP[0].type === "post"){
         const newPost = await prisma.post.create({
             data: {
