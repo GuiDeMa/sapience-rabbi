@@ -13,7 +13,7 @@ export async function ingestBmapTransaction(bmapTx) {
     let response = null
     const txid = bmapTx.tx.h
     const address = bmapTx.in[0].e.a
-    console.log(bmapTx)
+    //console.log(bmapTx)
     if (bmapTx.MAP[0].type === "post"){
         try {
             
