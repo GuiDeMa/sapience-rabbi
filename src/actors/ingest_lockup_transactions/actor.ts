@@ -4,7 +4,7 @@ require('dotenv').config();
 
 import { Actor, log } from 'rabbi';
 import { prisma } from '../../context';
-import { bmapParseTransaction } from '../../utils/bmap';
+import { bmapParseTransaction, ingestBmapTransaction } from '../../utils/bmap';
 import { bsv } from 'scrypt-ts';
 import { fetchTransaction } from '../../utils/whatsonchain';
 
@@ -31,6 +31,11 @@ export async function start(){
         let targetTxid = txid
         if (bmapTx.MAP[0].type === "like"){
             targetTxid = bmapTx.MAP[0].tx
+            const targetTxHex = await fetchTransaction({ txid: targetTxid})
+            const targetBmapTx = await bmapParseTransaction(targetTxHex)
+            const ingestContentResponse = await ingestBmapTransaction(targetBmapTx)
+        } else {
+            const ingestContentResponse = await ingestBmapTransaction(bmapTx)
         }
 
         const response = await prisma.lock.create({
@@ -93,11 +98,11 @@ export async function start(){
         let targetTxid = txid
         if (bmapTx.MAP[0].type === "like"){
             targetTxid = bmapTx.MAP[0].tx
-            const targetTxHex = await fetchTransaction(targetTxid)
+            const targetTxHex = await fetchTransaction({ txid: targetTxid})
             const targetBmapTx = await bmapParseTransaction(targetTxHex)
-            
+            const ingestContentResponse = await ingestBmapTransaction(targetBmapTx)
         } else {
-
+            const ingestContentResponse = await ingestBmapTransaction(bmapTx)
         }
 
         

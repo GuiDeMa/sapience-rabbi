@@ -9,6 +9,7 @@ export async function bmapParseTransaction(txhex: string){
 }
 
 export async function ingestBmapTransaction(bmapTx) {
+    let response
     if (bmapTx.MAP[0].type === "post"){
         const newPost = await prisma.post.create({
             data: {
@@ -44,6 +45,7 @@ export async function ingestBmapTransaction(bmapTx) {
             }
         })
         console.log(`ingest.post.response`, newPost)
+        response = newPost
     } else if (bmapTx.MAP[0].type === "message"){
         const newMessage = await prisma.message.create({
             data: {
@@ -81,5 +83,8 @@ export async function ingestBmapTransaction(bmapTx) {
         })
 
         console.log(`ingest.message.response`, newMessage)
+        response = newMessage
     }
+
+    return response
 }
