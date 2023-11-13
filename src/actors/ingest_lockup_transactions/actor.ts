@@ -22,7 +22,7 @@ export async function start(){
         
         const { txid, address, satoshis, lockUntilHeight, hex } = json
 
-        console.log("mempool.lock.discovered", { txid, address, satoshis, lockUntilHeight, hex } )
+        console.log("mempool.lock.discovered", txid)
 
         const bsvTx = new bsv.Transaction(hex)
         const bmapTx = await bmapParseTransaction(hex)
@@ -68,6 +68,8 @@ export async function start(){
                 }
             }
         })
+
+        console.log("ingest.lock.from.mempool.response", response)
     })
     Actor.create({
 
@@ -82,7 +84,7 @@ export async function start(){
         
         const { txid, address, satoshis, lockUntilHeight, hex, blockHeight, blockHeader } = json
 
-        console.log("block.lock.discovered", { txid, address, satoshis, lockUntilHeight, hex, blockHeight, blockHeader })
+        console.log("block.lock.discovered", txid)
 
         const bsvTx = new bsv.Transaction(hex)
         const bmapTx = await bmapParseTransaction(hex)
@@ -131,6 +133,8 @@ export async function start(){
                 }
             }
         })
+
+        console.log(`ingest.lock.from.block.${blockHeight}.response`, response)
     })
 }
 
