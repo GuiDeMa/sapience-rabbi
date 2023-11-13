@@ -61,7 +61,7 @@ model Lock {
   transaction         Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
   createdAt           DateTime     @default(now())
   satoshis            BigInt
-  blockHeight         Int
+  blockHeight         BigInt
   lockTarget          Transaction @relation(name: "LockTo", fields: [lockTargetByTxid], references: [hash]) // Can be Post or Message
   lockTargetByTxid    String
   locker              User        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
