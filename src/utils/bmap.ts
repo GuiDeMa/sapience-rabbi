@@ -1,4 +1,5 @@
 const { TransformTx, bobFromRawTx }  = require('bmapjs')
+import { add } from "winston"
 import { prisma } from "../context"
 
 export async function bmapParseTransaction(txhex: string){
@@ -19,10 +20,10 @@ export async function ingestBmapTransaction(bmapTx) {
                 transaction: {
                     connectOrCreate: {
                         where: {
-                            hash: bmapTx.tx.h
+                            hash: txid
                         },
                         create: {
-                            hash: bmapTx.tx.h
+                            hash: txid
                         }
                     }
                 },
@@ -33,18 +34,14 @@ export async function ingestBmapTransaction(bmapTx) {
                 postedBy: {
                     connectOrCreate: {
                         where: {
-                            address: bmapTx.in[0].e.a
+                            address: address
                         },
                         create: {
-                            address: bmapTx.in[0].e.a
+                            address: address
                         }
                     },
                 },
                 app: bmapTx.MAP[0].app ? bmapTx.MAP[0].app : null 
-            },
-            include: {
-                transaction: true,
-                postedBy: true
             }
         })
         console.log(`ingest.post.response`, newPost)
@@ -55,10 +52,10 @@ export async function ingestBmapTransaction(bmapTx) {
                 transaction: {
                     connectOrCreate: {
                         where: {
-                            hash: bmapTx.tx.h
+                            hash: txid
                         },
                         create: {
-                            hash: bmapTx.tx.h
+                            hash: txid
                         }
                     }
                 },
@@ -69,19 +66,15 @@ export async function ingestBmapTransaction(bmapTx) {
                 sentBy: {
                     connectOrCreate: {
                         where: {
-                            address: bmapTx.in[0].e.a
+                            address: address
                         },
                         create: {
-                            address: bmapTx.in[0].e.a
+                            address: address
                         }
                     },
                 },
                 app: bmapTx.MAP[0].app ? bmapTx.MAP[0].app : null,
                 channel: bmapTx.MAP[0].channel
-            },
-            include: {
-                transaction: true,
-                sentBy: true
             }
         })
 
