@@ -26,11 +26,11 @@ export async function getScriptHistory({ scriptHash }:{ scriptHash: string }): P
 
 export async function fetchTransaction({ txid }: {txid: string}): Promise<string> {
 
-  console.log('fetchTransaction', { txid })
+  //console.log('fetchTransaction', { txid })
 
   const result = await http.get(`https://api.whatsonchain.com/v1/bsv/main/tx/${txid}/hex`)
 
-  console.log('fetchTransaction.result', result.text)
+  //console.log('fetchTransaction.result', result.text)
 
   return result.text
 
