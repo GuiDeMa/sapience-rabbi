@@ -20,9 +20,9 @@ export async function start(){
     })
     .start(async (channel, msg, json) => {
         
-        console.log("lockup.actor.started")
-        
         const { txid, address, satoshis, lockUntilHeight, hex } = json
+
+        console.log("mempool.lock.discovered", { txid, address, satoshis, lockUntilHeight, hex } )
 
         const bsvTx = new bsv.Transaction(hex)
         const bmapTx = await bmapParseTransaction(hex)
@@ -80,9 +80,9 @@ export async function start(){
     })
     .start(async (channel, msg, json) => {
         
-        console.log("lockup.actor.started")
-        
         const { txid, address, satoshis, lockUntilHeight, hex, blockHeight, blockHeader } = json
+
+        console.log("block.lock.discovered", { txid, address, satoshis, lockUntilHeight, hex, blockHeight, blockHeader })
 
         const bsvTx = new bsv.Transaction(hex)
         const bmapTx = await bmapParseTransaction(hex)
