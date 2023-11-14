@@ -44,7 +44,7 @@ export async function start(){
             where: { txid },
             create: {
                 satoshis,
-                blockHeight: Number(lockUntilHeight),
+                blockHeight: BigInt(lockUntilHeight.toString()),
                 createdAt: new Date().toISOString(),
                 transaction: {
                     connectOrCreate: {
@@ -118,7 +118,7 @@ export async function start(){
             create: {
                 createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
                 satoshis,
-                blockHeight: Number(lockUntilHeight),
+                blockHeight: BigInt(lockUntilHeight.toString()),
                 transaction: {
                     connectOrCreate: {
                         where: {
