@@ -13,12 +13,14 @@ export async function ingestBmapTransaction(bmapTx) {
     let response = null
     const txid = bmapTx.tx.h
     const address = bmapTx.in[0].e.a
+    const paymail = bmapTx.MAP[0].paymail 
     //console.log(bmapTx)
     if (bmapTx.MAP[0].type === "post"){
         try {
             
-            const newPost = await prisma.post.create({
-                data: {
+            const newPost = await prisma.post.upsert({
+                where: { txid },
+                create: {
                     transaction: {
                         connectOrCreate: {
                             where: {
@@ -39,11 +41,25 @@ export async function ingestBmapTransaction(bmapTx) {
                                 address: address
                             },
                             create: {
-                                address: address
+                                address,
+                                paymail
                             }
                         },
                     },
                     app: bmapTx.MAP[0].app ? bmapTx.MAP[0].app : null 
+                },
+                update: {
+                    postedBy: {
+                        connectOrCreate: {
+                            where: {
+                                address: address
+                            },
+                            create: {
+                                address,
+                                paymail
+                            }
+                        },
+                    }
                 }
             })
             console.log(`ingest.post.response`, newPost)
@@ -53,8 +69,9 @@ export async function ingestBmapTransaction(bmapTx) {
         }
     } else if (bmapTx.MAP[0].type === "message"){
         try {
-            const newMessage = await prisma.message.create({
-                data: {
+            const newMessage = await prisma.message.upsert({
+                where: { txid },
+                create: {
                     transaction: {
                         connectOrCreate: {
                             where: {
@@ -75,12 +92,26 @@ export async function ingestBmapTransaction(bmapTx) {
                                 address: address
                             },
                             create: {
-                                address: address
+                                address,
+                                paymail
                             }
                         },
                     },
                     app: bmapTx.MAP[0].app ? bmapTx.MAP[0].app : null,
                     channel: bmapTx.MAP[0].channel
+                },
+                update: {
+                    sentBy: {
+                        connectOrCreate: {
+                            where: {
+                                address: address
+                            },
+                            create: {
+                                address,
+                                paymail
+                            }
+                        },
+                    }
                 }
             })
     

@@ -34,14 +34,15 @@ export async function start(){
                 targetTxid = bmapTx.MAP[0].tx
                 const targetTxHex = await fetchTransaction({ txid: targetTxid})
                 const targetBmapTx = await bmapParseTransaction(targetTxHex)
-                const ingestContentResponse = await ingestBmapTransaction(targetBmapTx)
+                await ingestBmapTransaction(targetBmapTx)
             } else {
-                const ingestContentResponse = await ingestBmapTransaction(bmapTx)
+                await ingestBmapTransaction(bmapTx)
             }
         }
 
-        const response = await prisma.lock.create({
-            data: {
+        const response = await prisma.lock.upsert({
+            where: { txid },
+            create: {
                 satoshis,
                 blockHeight: lockUntilHeight,
                 transaction: {
@@ -74,7 +75,8 @@ export async function start(){
                         }
                     }
                 }
-            }
+            },
+            update: {}
         })
 
         console.log("ingest.lock.from.mempool.response", response)
@@ -103,15 +105,16 @@ export async function start(){
                 targetTxid = bmapTx.MAP[0].tx
                 const targetTxHex = await fetchTransaction({ txid: targetTxid})
                 const targetBmapTx = await bmapParseTransaction(targetTxHex)
-                const ingestContentResponse = await ingestBmapTransaction(targetBmapTx)
+                await ingestBmapTransaction(targetBmapTx)
             } else {
-                const ingestContentResponse = await ingestBmapTransaction(bmapTx)
+                await ingestBmapTransaction(bmapTx)
             }
         }
 
         
-        const response = await prisma.lock.create({
-            data: {
+        const response = await prisma.lock.upsert({
+            where: { txid },
+            create: {
                 createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
                 satoshis,
                 blockHeight: lockUntilHeight,
@@ -146,7 +149,8 @@ export async function start(){
                         }
                     }
                 }
-            }
+            },
+            update: {}
         })
 
         console.log(`ingest.lock.from.block.${blockHeight}.response`, response)

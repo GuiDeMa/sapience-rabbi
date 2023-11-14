@@ -131,7 +131,17 @@ export const PostMutation = extendType({
             },
             app
           },
-          update: {},
+          update: {
+            postedBy: {
+              connectOrCreate: {
+                where: { address: postedByUserAddress },
+                create: { 
+                  address: postedByUserAddress,
+                  paymail: postedByUserPaymail
+                }
+              }
+            },
+          },
           include: {
             transaction: true,
             postedBy: true

@@ -136,7 +136,17 @@ export const MessageMutation = extendType({
             app,
             channel
           },
-          update: {},
+          update: {
+            sentBy: {
+              connectOrCreate: {
+                where: { address: sentByUserAddress },
+                create: {
+                  address: sentByUserAddress,
+                  paymail: sentByUserPaymail
+                }
+              }
+            }
+          },
           include: {
             transaction: true,
             sentBy: true
