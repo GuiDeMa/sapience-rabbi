@@ -19,7 +19,6 @@ export const Message = objectType({
         return context.prisma.message.findUnique({ where: { txid: parent.txid } }).sentBy()
       }
     })
-    t.string("sentByUserPaymail")
   },
 })
 

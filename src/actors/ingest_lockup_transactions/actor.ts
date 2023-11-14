@@ -117,7 +117,7 @@ export async function start(){
             create: {
                 createdAt: bmapTx.blk && new Date(bmapTx.blk.t * 1000).toISOString() ,
                 satoshis,
-                blockHeight: lockUntilHeight,
+                blockHeight: BigInt(lockUntilHeight),
                 transaction: {
                     connectOrCreate: {
                         where: {

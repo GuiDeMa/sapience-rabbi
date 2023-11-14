@@ -39,7 +39,6 @@ model Post {
   inReplyTo           String?
   postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
   postedByUserAddress String
-  postedByUserPaymail String?
   app                 String
 }
 
@@ -55,7 +54,6 @@ model Message {
   app               String
   sentBy            User        @relation(name: "Messages", fields: [sentByUserAddress], references: [address])
   sentByUserAddress String
-  sentByUserPaymail String?
 }
 
 model Lock {
