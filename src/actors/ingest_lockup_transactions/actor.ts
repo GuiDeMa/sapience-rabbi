@@ -116,7 +116,7 @@ export async function start(){
         const response = await prisma.lock.upsert({
             where: { txid },
             create: {
-                createdAt: new Date(bmapTx.blk.t * 1000).toISOString() ,
+                createdAt: new Date(blockHeader.time * 1000).toISOString() ,
                 satoshis,
                 blockHeight: BigInt(Number(lockUntilHeight.toString())),
                 transaction: {
