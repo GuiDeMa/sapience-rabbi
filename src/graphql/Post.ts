@@ -18,6 +18,7 @@ export const Post = objectType({
         return context.prisma.post.findUnique({ where: { txid: parent.txid } }).postedBy()
       }
     })
+    t.string("postedByUserPaymail")
   },
 })
 
@@ -79,6 +80,7 @@ interface NewPostProps {
   contentType: string;
   inReplyTo?: string;
   postedByUserAddress: string;
+  postedByUserPaymail?: string;
   app?: string;
 }
 
@@ -94,50 +96,48 @@ export const PostMutation = extendType({
         contentType: nonNull(stringArg()),
         inReplyTo: stringArg(),
         postedByUserAddress: nonNull(stringArg()),
+        postedByUserPaymail: stringArg(),
         app: stringArg()
       },
       async resolve(parent, args: NewPostProps, context) {
-        const { txid, createdAt, content, contentType, inReplyTo, postedByUserAddress, app } = args
+        const { txid, createdAt, content, contentType, inReplyTo, postedByUserAddress, postedByUserPaymail, app } = args
         /* const { userId } = context;
         
         if (!userId) {
             throw new Error("Cannot post without logging in.");
         } */
-        
-        const newPost = context.prisma.post.create({
-          data: {
+
+        const newPost = context.prisma.post.upsert({
+          where: { txid },
+          create: {
             transaction: {
               connectOrCreate: {
-                where: {
-                  hash: txid
-                },
-                create: {
-                  hash: txid
-                }
+                where: { hash: txid},
+                create: { hash: txid}
               }
             },
             createdAt,
-            content, 
-            contentType, 
-            inReplyTo, 
+            content,
+            contentType,
+            inReplyTo,
             postedBy: {
               connectOrCreate: {
-                where: {
-                  address: postedByUserAddress
-                },
-                create: {
-                  address: postedByUserAddress
+                where: { address: postedByUserAddress },
+                create: { 
+                  address: postedByUserAddress,
+                  paymail: postedByUserPaymail
                 }
               }
-            } ,
+            },
             app
           },
+          update: {},
           include: {
             transaction: true,
             postedBy: true
           }
         })
-
+        
         return newPost
       }
     })

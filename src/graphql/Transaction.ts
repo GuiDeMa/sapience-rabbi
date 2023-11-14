@@ -5,7 +5,7 @@ export const Transaction= objectType({
     definition (t) {
         t.nonNull.int("id")
         t.nonNull.string("hash")
-        t.int("block")
+        t.bigint("block")
         t.nonNull.list.field("locks", {
             type: "Lock",
             resolve(parent, args, context) {
@@ -56,10 +56,16 @@ export const TransactionMutation = extendType({
                     throw new Error("Cannot post without logging in.");
                 } */
 
-                const newTransaction = context.prisma.transaction.create({
-                    data: {
+                const newTransaction = context.prisma.transaction.upsert({
+                    where: {
                         hash,
-                        block,
+                    },
+                    update: {
+                        block
+                    },
+                    create: {
+                        hash,
+                        block
                     }
                     
                 })

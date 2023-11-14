@@ -32,7 +32,7 @@ type Leaderboard {
 
 type Lock {
   app: String
-  blockHeight: Int!
+  blockHeight: BigInt!
   createdAt: DateTime!
   id: Int!
   lockTarget: Transaction
@@ -51,6 +51,7 @@ type Message {
   id: Int!
   inReplyTo: String
   sentBy: User
+  sentByUserPaymail: String
   txid: String!
 }
 
@@ -60,10 +61,10 @@ input MessageOrderByInput {
 
 type Mutation {
   lock(blockHeight: Int!, createdAt: String, lockTargetByTxid: String!, lockerByUserAddress: String!, satoshis: Int!, txid: String!): Lock!
-  message(app: String, channel: String!, content: String!, contentType: String!, createdAt: String, inReplyTo: String, sentByUserAddress: String!, txid: String!): Message!
-  post(app: String, content: String!, contentType: String!, createdAt: String, inReplyTo: String, postedByUserAddress: String!, txid: String!): Post!
+  message(app: String, channel: String!, content: String!, contentType: String!, createdAt: String, inReplyTo: String, sentByUserAddress: String!, sentByUserPaymail: String, txid: String!): Message!
+  post(app: String, content: String!, contentType: String!, createdAt: String, inReplyTo: String, postedByUserAddress: String!, postedByUserPaymail: String, txid: String!): Post!
   transaction(block: Int, hash: String!): Transaction!
-  user(address: String!): User!
+  user(address: String!, paymail: String): User!
 }
 
 type Post {
@@ -74,6 +75,7 @@ type Post {
   id: Int!
   inReplyTo: String
   postedBy: User
+  postedByUserPaymail: String
   txid: String!
 }
 
@@ -93,7 +95,7 @@ enum Sort {
 }
 
 type Transaction {
-  block: Int
+  block: BigInt
   hash: String!
   id: Int!
   lock: Lock
@@ -107,6 +109,7 @@ type User {
   id: Int!
   locks: [Lock!]!
   messages: [Message!]!
+  paymail: String
   posts: [Post!]!
 }
 

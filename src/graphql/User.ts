@@ -8,6 +8,7 @@ export const User = objectType({
   definition(t) {
     t.nonNull.int("id")
     t.nonNull.string("address")
+    t.string("paymail")
     t.nonNull.list.nonNull.field("posts", {
       type: "Post",
       resolve(parent, args, context) {
@@ -84,6 +85,7 @@ export const UserQuery = extendType({
 
 interface NewUserProps {
   address: string;
+  paymail?: string;
 }
 
 export const UserMutation = extendType({
@@ -93,9 +95,10 @@ export const UserMutation = extendType({
       type: "User",
       args: {
         address: nonNull(stringArg()),
+        paymail: stringArg()
       },
       async resolve(parent, args: NewUserProps, context) {
-        const { address } = args
+        const { address, paymail } = args
 
         /* const { userId } = context;
         
@@ -103,9 +106,16 @@ export const UserMutation = extendType({
             throw new Error("Cannot post without logging in.");
         } */
 
-        const newUser = context.prisma.user.create({
-          data: {
+        const newUser = context.prisma.user.upsert({
+          where: {
             address,
+          },
+          update: {
+            paymail
+          },
+          create: {
+            address,
+            paymail
           }
         })
 

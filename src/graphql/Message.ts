@@ -19,7 +19,7 @@ export const Message = objectType({
         return context.prisma.message.findUnique({ where: { txid: parent.txid } }).sentBy()
       }
     })
-    
+    t.string("sentByUserPaymail")
   },
 })
 
@@ -81,6 +81,7 @@ interface NewMessageProps {
   contentType: string;
   inReplyTo?: string;
   sentByUserAddress: string;
+  sentByUserPaymail?: string;
   app?: string;
   channel: string;
 }
@@ -97,11 +98,12 @@ export const MessageMutation = extendType({
         contentType: nonNull(stringArg()),
         inReplyTo: stringArg(),
         sentByUserAddress: nonNull(stringArg()),
+        sentByUserPaymail: stringArg(),
         app: stringArg(),
         channel: nonNull(stringArg())
       },
       async resolve(parent, args: NewMessageProps, context) {
-        const { txid, createdAt, content, contentType, inReplyTo, sentByUserAddress, app, channel } = args
+        const { txid, createdAt, content, contentType, inReplyTo, sentByUserAddress, sentByUserPaymail, app, channel } = args
         
         /* const { userId } = context;
         
@@ -109,16 +111,13 @@ export const MessageMutation = extendType({
             throw new Error("Cannot post without logging in.");
         } */
 
-        const newMessage = context.prisma.message.create({
-          data: {
+        const newMessage = context.prisma.message.upsert({
+          where: { txid },
+          create: {
             transaction: {
               connectOrCreate: {
-                where: {
-                  hash: txid
-                },
-                create: {
-                  hash: txid
-                }
+                where: { hash: txid },
+                create: { hash: txid }
               }
             },
             createdAt,
@@ -127,17 +126,17 @@ export const MessageMutation = extendType({
             inReplyTo,
             sentBy: {
               connectOrCreate: {
-                where: {
-                  address: sentByUserAddress
-                },
+                where: { address: sentByUserAddress },
                 create: {
-                  address: sentByUserAddress
+                  address: sentByUserAddress,
+                  paymail: sentByUserPaymail
                 }
               }
             },
             app,
             channel
           },
+          update: {},
           include: {
             transaction: true,
             sentBy: true

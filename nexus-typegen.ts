@@ -80,7 +80,7 @@ export interface NexusGenObjects {
   }
   Lock: { // root type
     app?: string | null; // String
-    blockHeight: number; // Int!
+    blockHeight: NexusGenScalars['BigInt']; // BigInt!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
     lockTargetByTxid: string; // String!
@@ -95,6 +95,7 @@ export interface NexusGenObjects {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
     inReplyTo?: string | null; // String
+    sentByUserPaymail?: string | null; // String
     txid: string; // String!
   }
   Mutation: {};
@@ -105,17 +106,19 @@ export interface NexusGenObjects {
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
     inReplyTo?: string | null; // String
+    postedByUserPaymail?: string | null; // String
     txid: string; // String!
   }
   Query: {};
   Transaction: { // root type
-    block?: number | null; // Int
+    block?: NexusGenScalars['BigInt'] | null; // BigInt
     hash: string; // String!
     id: number; // Int!
   }
   User: { // root type
     address: string; // String!
     id: number; // Int!
+    paymail?: string | null; // String
   }
 }
 
@@ -147,7 +150,7 @@ export interface NexusGenFieldTypes {
   }
   Lock: { // field return type
     app: string | null; // String
-    blockHeight: number; // Int!
+    blockHeight: NexusGenScalars['BigInt']; // BigInt!
     createdAt: NexusGenScalars['DateTime']; // DateTime!
     id: number; // Int!
     lockTarget: NexusGenRootTypes['Transaction'] | null; // Transaction
@@ -165,6 +168,7 @@ export interface NexusGenFieldTypes {
     id: number; // Int!
     inReplyTo: string | null; // String
     sentBy: NexusGenRootTypes['User'] | null; // User
+    sentByUserPaymail: string | null; // String
     txid: string; // String!
   }
   Mutation: { // field return type
@@ -182,6 +186,7 @@ export interface NexusGenFieldTypes {
     id: number; // Int!
     inReplyTo: string | null; // String
     postedBy: NexusGenRootTypes['User'] | null; // User
+    postedByUserPaymail: string | null; // String
     txid: string; // String!
   }
   Query: { // field return type
@@ -190,7 +195,7 @@ export interface NexusGenFieldTypes {
     leaderboard: NexusGenRootTypes['Leaderboard']; // Leaderboard!
   }
   Transaction: { // field return type
-    block: number | null; // Int
+    block: NexusGenScalars['BigInt'] | null; // BigInt
     hash: string; // String!
     id: number; // Int!
     lock: NexusGenRootTypes['Lock'] | null; // Lock
@@ -203,6 +208,7 @@ export interface NexusGenFieldTypes {
     id: number; // Int!
     locks: NexusGenRootTypes['Lock'][]; // [Lock!]!
     messages: NexusGenRootTypes['Message'][]; // [Message!]!
+    paymail: string | null; // String
     posts: NexusGenRootTypes['Post'][]; // [Post!]!
   }
 }
@@ -225,7 +231,7 @@ export interface NexusGenFieldTypeNames {
   }
   Lock: { // field return type name
     app: 'String'
-    blockHeight: 'Int'
+    blockHeight: 'BigInt'
     createdAt: 'DateTime'
     id: 'Int'
     lockTarget: 'Transaction'
@@ -243,6 +249,7 @@ export interface NexusGenFieldTypeNames {
     id: 'Int'
     inReplyTo: 'String'
     sentBy: 'User'
+    sentByUserPaymail: 'String'
     txid: 'String'
   }
   Mutation: { // field return type name
@@ -260,6 +267,7 @@ export interface NexusGenFieldTypeNames {
     id: 'Int'
     inReplyTo: 'String'
     postedBy: 'User'
+    postedByUserPaymail: 'String'
     txid: 'String'
   }
   Query: { // field return type name
@@ -268,7 +276,7 @@ export interface NexusGenFieldTypeNames {
     leaderboard: 'Leaderboard'
   }
   Transaction: { // field return type name
-    block: 'Int'
+    block: 'BigInt'
     hash: 'String'
     id: 'Int'
     lock: 'Lock'
@@ -281,6 +289,7 @@ export interface NexusGenFieldTypeNames {
     id: 'Int'
     locks: 'Lock'
     messages: 'Message'
+    paymail: 'String'
     posts: 'Post'
   }
 }
@@ -303,6 +312,7 @@ export interface NexusGenArgTypes {
       createdAt?: string | null; // String
       inReplyTo?: string | null; // String
       sentByUserAddress: string; // String!
+      sentByUserPaymail?: string | null; // String
       txid: string; // String!
     }
     post: { // args
@@ -312,6 +322,7 @@ export interface NexusGenArgTypes {
       createdAt?: string | null; // String
       inReplyTo?: string | null; // String
       postedByUserAddress: string; // String!
+      postedByUserPaymail?: string | null; // String
       txid: string; // String!
     }
     transaction: { // args
@@ -320,6 +331,7 @@ export interface NexusGenArgTypes {
     }
     user: { // args
       address: string; // String!
+      paymail?: string | null; // String
     }
   }
   Query: {

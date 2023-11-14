@@ -23,6 +23,7 @@ model Transaction {
 model User {
   id       Int       @id @default(autoincrement())
   address  String    @unique
+  paymail  String?
   posts    Post[]    @relation(name: "Posts")
   messages Message[] @relation(name: "Messages")
   locks    Lock[]    @relation(name: "Locks")
@@ -36,8 +37,9 @@ model Post {
   content             String
   contentType         String
   inReplyTo           String?
-  postedBy            User?        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
-  postedByUserAddress String?
+  postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
+  postedByUserAddress String
+  postedByUserPaymail String?
   app                 String
 }
 
@@ -51,8 +53,9 @@ model Message {
   contentType       String
   inReplyTo         String
   app               String
-  sentBy            User?        @relation(name: "Messages", fields: [sentByUserAddress], references: [address])
-  sentByUserAddress String?
+  sentBy            User        @relation(name: "Messages", fields: [sentByUserAddress], references: [address])
+  sentByUserAddress String
+  sentByUserPaymail String?
 }
 
 model Lock {

@@ -7,7 +7,7 @@ export const Lock = objectType({
     t.nonNull.string("txid");
     t.nonNull.dateTime("createdAt");
     t.nonNull.bigint("satoshis");
-    t.nonNull.int("blockHeight");
+    t.nonNull.bigint("blockHeight");
     t.string("app");
     t.nonNull.field("locker", {
       type: "User",
@@ -58,8 +58,9 @@ export const LockMutation = extendType({
             throw new Error("Cannot post without logging in.");
         } */
 
-        const newLock = context.prisma.lock.create({
-          data: {
+        const newLock = context.prisma.lock.upsert({
+          where: { txid },
+          create: {
             transaction: {
               connectOrCreate: {
                 where: {
@@ -93,7 +94,8 @@ export const LockMutation = extendType({
                 }
               }
             }
-          }
+          },
+          update: {}
         })
 
         return newLock
