@@ -45,6 +45,7 @@ export async function start(){
             create: {
                 satoshis,
                 blockHeight: Number(lockUntilHeight),
+                createdAt: new Date().toISOString(),
                 transaction: {
                     connectOrCreate: {
                         where: {

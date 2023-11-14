@@ -33,7 +33,7 @@ model Post {
   id                  Int          @id @default(autoincrement())
   txid                String       @unique
   transaction         Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
-  createdAt           DateTime     @default(now())
+  createdAt           DateTime     
   content             String
   contentType         String
   inReplyTo           String?
@@ -46,7 +46,7 @@ model Message {
   id                Int          @id @default(autoincrement())
   txid              String       @unique
   transaction       Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
-  createdAt         DateTime     @default(now())
+  createdAt         DateTime     
   channel           String       @unique
   content           String
   contentType       String
@@ -60,7 +60,7 @@ model Lock {
   id                  Int          @id @default(autoincrement())
   txid                String      @unique
   transaction         Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
-  createdAt           DateTime     @default(now())
+  createdAt           DateTime     
   satoshis            BigInt
   blockHeight         BigInt
   lockTarget          Transaction @relation(name: "LockTo", fields: [lockTargetByTxid], references: [hash]) // Can be Post or Message
