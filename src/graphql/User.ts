@@ -1,7 +1,6 @@
 import { arg, extendType, inputObjectType, intArg, list, nonNull, objectType, stringArg } from "nexus";
 import { Sort } from "./Sort";
 import { Prisma } from "@prisma/client";
-import { string } from "joi";
 
 export const User = objectType({
   name: "User",
@@ -30,8 +29,8 @@ export const User = objectType({
   },
 })
 
-export const leaderboard = objectType({
-  name: "Leaderboard",
+export const allUsers = objectType({
+  name: "allUsers",
   definition(t) {
     t.nonNull.list.nonNull.field("users", { type: "User" })
     t.nonNull.int("count")
@@ -49,8 +48,8 @@ export const UserOrderByInput = inputObjectType({
 export const UserQuery = extendType({
   type: "Query",
   definition(t) {
-    t.nonNull.field("leaderboard", {
-      type: "Leaderboard",
+    t.nonNull.field("allUsers", {
+      type: "allUsers",
       args: {
         filter: stringArg(),
         skip: intArg(),
@@ -71,7 +70,7 @@ export const UserQuery = extendType({
         })
 
         const count = await context.prisma.user.count({ where })
-        const id = `channel: ${JSON.stringify(args)}`
+        const id = `users: ${JSON.stringify(args)}`
 
         return {
           users,

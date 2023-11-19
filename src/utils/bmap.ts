@@ -31,7 +31,7 @@ export async function ingestBmapTransaction(bmapTx) {
                             }
                         }
                     },
-                    createdAt: bmapTx.blk ? new Date(bmapTx.blk.t * 1000).toISOString() : new Date().toISOString(),
+                    unixtime: bmapTx.blk ? bmapTx.blk.t : new Date().getTime() / 1000,
                     content: bmapTx.B[0].content,
                     contentType: bmapTx.B[0]["content-type"],
                     inReplyTo: bmapTx.MAP[0].context === "tx" ? bmapTx.MAP[0].tx : null,
@@ -82,7 +82,7 @@ export async function ingestBmapTransaction(bmapTx) {
                             }
                         }
                     },
-                    createdAt: bmapTx.blk ? new Date(bmapTx.blk.t * 1000).toISOString() : new Date().toISOString(),
+                    unixtime: bmapTx.blk ? bmapTx.blk.t : new Date().getTime() / 1000,
                     content: bmapTx.B[0].content,
                     contentType: bmapTx.B[0]["content-type"],
                     inReplyTo: bmapTx.MAP[0].context === "tx" ? bmapTx.MAP[0].tx : null,

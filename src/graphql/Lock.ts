@@ -1,11 +1,13 @@
-import { extendType, intArg, nonNull, objectType, stringArg } from "nexus";
+import { arg, extendType, inputObjectType, intArg, list, nonNull, objectType, stringArg } from "nexus";
+import { Sort } from "./Sort";
+import { Prisma } from "@prisma/client";
 
 export const Lock = objectType({
   name: "Lock",
   definition(t) {
     t.nonNull.int("id");
     t.nonNull.string("txid");
-    t.nonNull.dateTime("createdAt");
+    t.nonNull.int("unixtime");
     t.nonNull.bigint("satoshis");
     t.nonNull.bigint("blockHeight");
     t.string("app");
@@ -25,11 +27,59 @@ export const Lock = objectType({
   },
 })
 
+export const allLocks = objectType({
+  name: "allLocks",
+  definition(t) {
+    t.nonNull.list.nonNull.field("locks", { type: "Lock" })
+    t.nonNull.int("count")
+    t.id("id")
+  },
+})
+
+export const LockOrderByInput = inputObjectType({
+  name: "LockOrderByInput",
+  definition(t) {
+    t.field("unixtime", { type: Sort })
+  },
+})
+
+export const LockQuery = extendType({
+  type: "Query",
+  definition(t) {
+    t.nonNull.field("allLocks", {
+      type: "allLocks",
+      args: {
+        filter: stringArg(),
+        skip: intArg(),
+        take: intArg(),
+        orderBy: arg({ type: list(nonNull(LockOrderByInput))})
+      },
+      async resolve(parent, args, context) {
+        const where = {}
+        const locks = await context.prisma.lock.findMany({
+          where,
+          skip: args?.skip as number | undefined,
+          take: args?.take as number | undefined,
+          orderBy: args?.orderBy as | Prisma.Enumerable<Prisma.LockOrderByWithRelationInput> | undefined 
+        })
+        const count = await context.prisma.lock.count({ where })
+        const id = `allLocks: ${JSON.stringify(args)}`
+
+        return {
+          locks,
+          count,
+          id
+        }
+      }
+    })
+  },
+})
+
 // TODO Ranking Query
 
 interface NewLockProps {
   txid: string;
-  createdAt: string;
+  unixtime: number;
   satoshis: number;
   blockHeight: number;
   lockTargetByTxid: string;
@@ -43,14 +93,14 @@ export const LockMutation = extendType({
       type: "Lock",
       args: {
         txid: nonNull(stringArg()),
-        createdAt: stringArg(),
+        unixtime: nonNull(intArg()),
         satoshis: nonNull(intArg()),
         blockHeight: nonNull(intArg()),
         lockTargetByTxid: nonNull(stringArg()),
         lockerByUserAddress: nonNull(stringArg())
       },
       async resolve(parent, args: NewLockProps, context) {
-        const { txid, createdAt, satoshis, blockHeight, lockTargetByTxid, lockerByUserAddress } = args
+        const { txid, unixtime, satoshis, blockHeight, lockTargetByTxid, lockerByUserAddress } = args
 
         /* const { userId } = context;
         
@@ -71,7 +121,7 @@ export const LockMutation = extendType({
                 }
               },
             },
-            createdAt,
+            unixtime,
             satoshis,
             blockHeight,
             lockTarget: {

@@ -7,39 +7,25 @@ The `BigInt` scalar type represents non-fractional signed whole numeric values.
 """
 scalar BigInt
 
-type Channel {
-  count: Int!
-  id: ID
-  messages: [Message!]!
-}
-
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
 scalar DateTime
 
-type Feed {
-  count: Int!
-  id: ID
-  posts: [Post!]!
-}
-
-type Leaderboard {
-  count: Int!
-  id: ID
-  users: [User!]!
-}
-
 type Lock {
   app: String
   blockHeight: BigInt!
-  createdAt: DateTime!
   id: Int!
   lockTarget: Transaction
   lockTargetByTxid: String!
   locker: User!
   satoshis: BigInt!
   txid: String!
+  unixtime: Int!
+}
+
+input LockOrderByInput {
+  unixtime: Sort
 }
 
 type Message {
@@ -47,22 +33,21 @@ type Message {
   channel: String!
   content: String!
   contentType: String!
-  createdAt: DateTime!
   id: Int!
   inReplyTo: String
   sentBy: User
-  sentByUserPaymail: String
   txid: String!
+  unixtime: Int!
 }
 
 input MessageOrderByInput {
-  createdAt: Sort
+  unixtime: Sort
 }
 
 type Mutation {
-  lock(blockHeight: Int!, createdAt: String, lockTargetByTxid: String!, lockerByUserAddress: String!, satoshis: Int!, txid: String!): Lock!
-  message(app: String, channel: String!, content: String!, contentType: String!, createdAt: String, inReplyTo: String, sentByUserAddress: String!, sentByUserPaymail: String, txid: String!): Message!
-  post(app: String, content: String!, contentType: String!, createdAt: String, inReplyTo: String, postedByUserAddress: String!, postedByUserPaymail: String, txid: String!): Post!
+  lock(blockHeight: Int!, lockTargetByTxid: String!, lockerByUserAddress: String!, satoshis: Int!, txid: String!, unixtime: Int!): Lock!
+  message(app: String, channel: String!, content: String!, contentType: String!, inReplyTo: String, sentByUserAddress: String!, sentByUserPaymail: String, txid: String!, unixtime: Int!): Message!
+  post(app: String, content: String!, contentType: String!, inReplyTo: String, postedByUserAddress: String!, postedByUserPaymail: String, txid: String!, unixtime: Int!): Post!
   transaction(block: Int, hash: String!): Transaction!
   user(address: String!, paymail: String): User!
 }
@@ -71,22 +56,22 @@ type Post {
   app: String
   content: String!
   contentType: String!
-  createdAt: DateTime!
   id: Int!
   inReplyTo: String
   postedBy: User
-  postedByUserPaymail: String
   txid: String!
+  unixtime: Int!
 }
 
 input PostOrderByInput {
-  createdAt: Sort
+  unixtime: Sort
 }
 
 type Query {
-  channel(channel: String!, filter: String, orderBy: [MessageOrderByInput!], skip: Int, take: Int): Channel!
-  feed(filter: String, orderBy: [PostOrderByInput!], skip: Int, take: Int): Feed!
-  leaderboard(filter: String, orderBy: [UserOrderByInput!], skip: Int, take: Int): Leaderboard!
+  allLocks(filter: String, orderBy: [LockOrderByInput!], skip: Int, take: Int): allLocks!
+  allMessages(channel: String!, filter: String, orderBy: [MessageOrderByInput!], skip: Int, take: Int): allMessages!
+  allPosts(filter: String, orderBy: [PostOrderByInput!], skip: Int, take: Int): allPosts!
+  allUsers(filter: String, orderBy: [UserOrderByInput!], skip: Int, take: Int): allUsers!
 }
 
 enum Sort {
@@ -115,4 +100,28 @@ type User {
 
 input UserOrderByInput {
   locks: Sort
+}
+
+type allLocks {
+  count: Int!
+  id: ID
+  locks: [Lock!]!
+}
+
+type allMessages {
+  count: Int!
+  id: ID
+  messages: [Message!]!
+}
+
+type allPosts {
+  count: Int!
+  id: ID
+  posts: [Post!]!
+}
+
+type allUsers {
+  count: Int!
+  id: ID
+  users: [User!]!
 }

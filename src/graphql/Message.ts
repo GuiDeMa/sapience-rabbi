@@ -8,7 +8,7 @@ export const Message = objectType({
     t.nonNull.int("id");
     t.nonNull.string("txid");
     t.nonNull.string("channel")
-    t.nonNull.dateTime("createdAt");
+    t.nonNull.int("unixtime");
     t.nonNull.string("content");
     t.nonNull.string("contentType");
     t.string("inReplyTo");
@@ -22,8 +22,8 @@ export const Message = objectType({
   },
 })
 
-export const Channel = objectType({
-  name: "Channel",
+export const allMessages = objectType({
+  name: "allMessages",
   definition(t) {
     t.nonNull.list.nonNull.field("messages", { type: "Message" })
     t.nonNull.int("count")
@@ -34,15 +34,15 @@ export const Channel = objectType({
 export const MessageOrderByInput = inputObjectType({
   name: "MessageOrderByInput",
   definition(t) {
-    t.field("createdAt", { type: Sort })
+    t.field("unixtime", { type: Sort })
   },
 })
 
 export const MessageQuery = extendType({
   type: "Query",
   definition(t) {
-    t.nonNull.field("channel", {
-      type: "Channel",
+    t.nonNull.field("allMessages", {
+      type: "allMessages",
       args: {
         channel: nonNull(stringArg()),
         filter: stringArg(),
@@ -61,7 +61,7 @@ export const MessageQuery = extendType({
           | undefined,
         })
         const count = await context.prisma.message.count({ where })
-        const id=`channel: ${JSON.stringify(args)}`
+        const id=`allMessages: ${JSON.stringify(args)}`
 
         return {
           messages,
@@ -75,7 +75,7 @@ export const MessageQuery = extendType({
 
 interface NewMessageProps {
   txid: string;
-  createdAt: string;
+  unixtime: number;
   content: string;
   contentType: string;
   inReplyTo?: string;
@@ -92,7 +92,7 @@ export const MessageMutation = extendType({
       type: "Message",
       args: {
         txid: nonNull(stringArg()),
-        createdAt: stringArg(),
+        unixtime: nonNull(intArg()),
         content: nonNull(stringArg()),
         contentType: nonNull(stringArg()),
         inReplyTo: stringArg(),
@@ -102,7 +102,7 @@ export const MessageMutation = extendType({
         channel: nonNull(stringArg())
       },
       async resolve(parent, args: NewMessageProps, context) {
-        const { txid, createdAt, content, contentType, inReplyTo, sentByUserAddress, sentByUserPaymail, app, channel } = args
+        const { txid, unixtime, content, contentType, inReplyTo, sentByUserAddress, sentByUserPaymail, app, channel } = args
         
         /* const { userId } = context;
         
@@ -119,7 +119,7 @@ export const MessageMutation = extendType({
                 create: { hash: txid }
               }
             },
-            createdAt,
+            unixtime,
             content,
             contentType,
             inReplyTo,

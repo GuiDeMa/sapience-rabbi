@@ -7,7 +7,7 @@ export const Post = objectType({
   definition(t) {
     t.nonNull.int("id");
     t.nonNull.string("txid");
-    t.nonNull.dateTime("createdAt");
+    t.nonNull.int("unixtime");
     t.nonNull.string("content");
     t.nonNull.string("contentType");
     t.string("inReplyTo");
@@ -21,8 +21,8 @@ export const Post = objectType({
   },
 })
 
-export const Feed = objectType({
-  name: "Feed",
+export const allPosts = objectType({
+  name: "allPosts",
   definition(t) {
     t.nonNull.list.nonNull.field("posts", { type: "Post"})
     t.nonNull.int("count")
@@ -33,15 +33,15 @@ export const Feed = objectType({
 export const PostOrderByInput = inputObjectType({
   name: "PostOrderByInput",
   definition(t) {
-    t.field("createdAt", { type: Sort })
+    t.field("unixtime", { type: Sort })
   },
 })
 
 export const PostQuery = extendType({
   type: "Query",
   definition(t) {
-    t.nonNull.field("feed", {
-      type: "Feed",
+    t.nonNull.field("allPosts", {
+      type: "allPosts",
       args: {
         filter: stringArg(),
         skip: intArg(),
@@ -60,7 +60,7 @@ export const PostQuery = extendType({
           | undefined,
         })
         const count = await context.prisma.post.count({ where })
-        const id = `main-feed: ${JSON.stringify(args)}`
+        const id = `allPosts: ${JSON.stringify(args)}`
 
         return {
           posts,
@@ -74,7 +74,7 @@ export const PostQuery = extendType({
 
 interface NewPostProps {
   txid: string;
-  createdAt: string;
+  unixtime: number;
   content: string;
   contentType: string;
   inReplyTo?: string;
@@ -90,7 +90,7 @@ export const PostMutation = extendType({
       type: "Post",
       args: {
         txid: nonNull(stringArg()),
-        createdAt: stringArg(),
+        unixtime: nonNull(intArg()),
         content: nonNull(stringArg()),
         contentType: nonNull(stringArg()),
         inReplyTo: stringArg(),
@@ -99,7 +99,7 @@ export const PostMutation = extendType({
         app: stringArg()
       },
       async resolve(parent, args: NewPostProps, context) {
-        const { txid, createdAt, content, contentType, inReplyTo, postedByUserAddress, postedByUserPaymail, app } = args
+        const { txid, unixtime, content, contentType, inReplyTo, postedByUserAddress, postedByUserPaymail, app } = args
         /* const { userId } = context;
         
         if (!userId) {
@@ -115,7 +115,7 @@ export const PostMutation = extendType({
                 create: { hash: txid}
               }
             },
-            createdAt,
+            unixtime,
             content,
             contentType,
             inReplyTo,

@@ -30,10 +30,10 @@ model User {
 }
 
 model Post {
-  id                  Int          @id @default(autoincrement())
-  txid                String       @unique
+  id                  Int         @id @default(autoincrement())
+  txid                String      @unique
   transaction         Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
-  createdAt           DateTime     
+  unixtime            Int
   content             String
   contentType         String
   inReplyTo           String?
@@ -43,11 +43,11 @@ model Post {
 }
 
 model Message {
-  id                Int          @id @default(autoincrement())
-  txid              String       @unique
+  id                Int         @id @default(autoincrement())
+  txid              String      @unique
   transaction       Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
-  createdAt         DateTime     
-  channel           String       @unique
+  unixtime          Int
+  channel           String      @unique
   content           String
   contentType       String
   inReplyTo         String
@@ -57,10 +57,10 @@ model Message {
 }
 
 model Lock {
-  id                  Int          @id @default(autoincrement())
+  id                  Int         @id @default(autoincrement())
   txid                String      @unique
   transaction         Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
-  createdAt           DateTime     
+  unixtime            Int
   satoshis            BigInt
   blockHeight         BigInt
   lockTarget          Transaction @relation(name: "LockTo", fields: [lockTargetByTxid], references: [hash]) // Can be Post or Message
