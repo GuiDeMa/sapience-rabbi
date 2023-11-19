@@ -1,6 +1,8 @@
 import { arg, extendType, inputObjectType, intArg, list, nonNull, objectType, stringArg } from "nexus";
 import { Sort } from "./Sort";
 import { Prisma } from "@prisma/client";
+import { NewPostProps } from "./Post";
+import { NewMessageProps } from "./Message";
 
 export const Lock = objectType({
   name: "Lock",
@@ -10,20 +12,27 @@ export const Lock = objectType({
     t.nonNull.int("unixtime");
     t.nonNull.bigint("satoshis");
     t.nonNull.bigint("blockHeight");
+    t.nonNull.float("vibes");
     t.string("app");
     t.nonNull.field("locker", {
       type: "User",
       resolve(parent, args, context) {
         return context.prisma.lock.findUnique({ where: { txid: parent.txid } }).locker()
       }
-    })
-    t.nonNull.string("lockTargetByTxid")
-    t.field("lockTarget", {
-      type: "Transaction",
+    });
+    t.nonNull.string("lockTargetByTxid");
+    t.field("postLockTarget", {
+      type: "Post",
       resolve(parent, args, context) {
-        return context.prisma.lock.findFirst({ where: { lockTargetByTxid: parent.lockTargetByTxid}}).lockTarget()
+        return context.prisma.lock.findFirst({ where: { lockTargetByTxid: parent.lockTargetByTxid}}).postLockTarget()
       }
-    }) 
+    });
+    t.field("MessageLockTarget", {
+      type: "Message",
+      resolve(parent, args, context) {
+        return context.prisma.lock.findFirst({ where: { lockTargetByTxid: parent.lockTargetByTxid}}).messageLockTarget()
+      }
+    });  
   },
 })
 
@@ -83,7 +92,11 @@ interface NewLockProps {
   satoshis: number;
   blockHeight: number;
   lockTargetByTxid: string;
+  postLockTarget?: NewPostProps;
+  messageLockTarget?: NewMessageProps;
   lockerByUserAddress: string;
+  lockerByUserPaymail?: string;
+  app?: string;
 }
 
 export const LockMutation = extendType({
@@ -97,16 +110,20 @@ export const LockMutation = extendType({
         satoshis: nonNull(intArg()),
         blockHeight: nonNull(intArg()),
         lockTargetByTxid: nonNull(stringArg()),
-        lockerByUserAddress: nonNull(stringArg())
+        lockerByUserAddress: nonNull(stringArg()),
+        lockerByUserPaymail: stringArg(),
+        app: stringArg()
       },
       async resolve(parent, args: NewLockProps, context) {
-        const { txid, unixtime, satoshis, blockHeight, lockTargetByTxid, lockerByUserAddress } = args
+        const { txid, unixtime, satoshis, blockHeight, lockTargetByTxid, postLockTarget, messageLockTarget, lockerByUserAddress, lockerByUserPaymail, app } = args
 
         /* const { userId } = context;
         
         if (!userId) {
             throw new Error("Cannot post without logging in.");
         } */
+
+        const vibes = satoshis * Math.log10(blockHeight)
 
         const newLock = context.prisma.lock.upsert({
           where: { txid },
@@ -123,14 +140,39 @@ export const LockMutation = extendType({
             },
             unixtime,
             satoshis,
+            vibes,
             blockHeight,
-            lockTarget: {
+            app,
+            postLockTarget: {
               connectOrCreate: {
                 where: {
-                  hash: lockTargetByTxid
+                  txid: lockTargetByTxid
                 },
                 create: {
-                  hash: lockTargetByTxid
+                  txid: lockTargetByTxid,
+                  unixtime: postLockTarget.unixtime,
+                  content: postLockTarget.content,
+                  contentType: postLockTarget.contentType,
+                  inReplyTo: postLockTarget.inReplyTo,
+                  app: postLockTarget.app,
+                  postedByUserAddress: postLockTarget.postedByUserAddress,
+                }
+              }
+            },
+            messageLockTarget: {
+              connectOrCreate: {
+                where: {
+                  txid: lockTargetByTxid
+                },
+                create: {
+                  txid: lockTargetByTxid,
+                  unixtime: messageLockTarget.unixtime,
+                  content: messageLockTarget.content,
+                  contentType: messageLockTarget.contentType,
+                  inReplyTo: messageLockTarget.inReplyTo,
+                  app: messageLockTarget.app,
+                  channel: messageLockTarget.app,
+                  sentByUserAddress: messageLockTarget.sentByUserAddress
                 }
               }
             },
@@ -141,6 +183,7 @@ export const LockMutation = extendType({
                 },
                 create: {
                   address: lockerByUserAddress,
+                  paymail: lockerByUserPaymail
                 }
               }
             }

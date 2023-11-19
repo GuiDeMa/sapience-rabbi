@@ -72,7 +72,7 @@ export const PostQuery = extendType({
   },
 })
 
-interface NewPostProps {
+export interface NewPostProps {
   txid: string;
   unixtime: number;
   content: string;

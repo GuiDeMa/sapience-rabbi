@@ -73,7 +73,7 @@ export const MessageQuery = extendType({
   },
 })
 
-interface NewMessageProps {
+export interface NewMessageProps {
   txid: string;
   unixtime: number;
   content: string;

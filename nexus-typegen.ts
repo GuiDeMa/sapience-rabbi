@@ -74,6 +74,7 @@ export interface NexusGenObjects {
     satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
     unixtime: number; // Int!
+    vibes: number; // Float!
   }
   Message: { // root type
     app?: string | null; // String
@@ -140,15 +141,17 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 
 export interface NexusGenFieldTypes {
   Lock: { // field return type
+    MessageLockTarget: NexusGenRootTypes['Message'] | null; // Message
     app: string | null; // String
     blockHeight: NexusGenScalars['BigInt']; // BigInt!
     id: number; // Int!
-    lockTarget: NexusGenRootTypes['Transaction'] | null; // Transaction
     lockTargetByTxid: string; // String!
     locker: NexusGenRootTypes['User']; // User!
+    postLockTarget: NexusGenRootTypes['Post'] | null; // Post
     satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
     unixtime: number; // Int!
+    vibes: number; // Float!
   }
   Message: { // field return type
     app: string | null; // String
@@ -225,15 +228,17 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   Lock: { // field return type name
+    MessageLockTarget: 'Message'
     app: 'String'
     blockHeight: 'BigInt'
     id: 'Int'
-    lockTarget: 'Transaction'
     lockTargetByTxid: 'String'
     locker: 'User'
+    postLockTarget: 'Post'
     satoshis: 'BigInt'
     txid: 'String'
     unixtime: 'Int'
+    vibes: 'Float'
   }
   Message: { // field return type name
     app: 'String'

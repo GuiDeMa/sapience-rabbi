@@ -29,11 +29,12 @@ export async function start(){
         const bmapTx = await bmapParseTransaction(hex)
 
         let targetTxid = txid
+        let targetBmapTx = bmapTx
         if (bmapTx.MAP){
             if (bmapTx.MAP[0].type === "like"){
                 targetTxid = bmapTx.MAP[0].tx
                 const targetTxHex = await fetchTransaction({ txid: targetTxid})
-                const targetBmapTx = await bmapParseTransaction(targetTxHex)
+                targetBmapTx = await bmapParseTransaction(targetTxHex)
                 await ingestBmapTransaction(targetBmapTx)
             } else {
                 await ingestBmapTransaction(bmapTx)
@@ -45,6 +46,7 @@ export async function start(){
             create: {
                 satoshis,
                 blockHeight: BigInt(Number(lockUntilHeight.toString())),
+                vibes: satoshis * Math.log10(lockUntilHeight),
                 unixtime: new Date().getTime() / 1000,
                 transaction: {
                     connectOrCreate: {
@@ -55,14 +57,38 @@ export async function start(){
                             hash: txid,
                         }
                     }
-                } ,
-                lockTarget: {
+                },
+                app: bmapTx.MAP[0].app,
+                postLockTarget: {
+                    connectOrCreate: {
+                      where: {
+                        txid: targetTxid
+                      },
+                      create: {
+                        txid: targetTxid,
+                        unixtime: new Date().getTime() / 1000,
+                        content: targetBmapTx.B[0].content,
+                        contentType: targetBmapTx.B[0]["content-type"],
+                        inReplyTo: targetBmapTx.MAP[0].context === "tx" ? targetBmapTx.MAP[0].tx : null,
+                        app: targetBmapTx.MAP[0].app,
+                        postedByUserAddress: targetBmapTx.in[0].e.a,
+                      }
+                    }
+                },
+                messageLockTarget: {
                     connectOrCreate: {
                         where: {
-                            hash: targetTxid
+                            txid: targetTxid
                         },
                         create: {
-                            hash: targetTxid
+                            txid: targetTxid,
+                            unixtime: new Date().getTime() / 1000,
+                            content: targetBmapTx.B[0].content,
+                            contentType: targetBmapTx.B[0]["content-type"],
+                            inReplyTo: targetBmapTx.MAP[0].context === "tx" ? targetBmapTx.MAP[0].tx : null,
+                            app: targetBmapTx.MAP[0].app,
+                            channel: targetBmapTx.MAP[0].channel,
+                            sentByUserAddress: targetBmapTx.in[0].e.a,
                         }
                     }
                 },
@@ -73,6 +99,7 @@ export async function start(){
                         },
                         create: {
                             address: address,
+                            paymail: bmapTx.MAP[0].paymail
                         }
                     }
                 }
@@ -101,11 +128,12 @@ export async function start(){
         const bmapTx = await bmapParseTransaction(hex)
 
         let targetTxid = txid
+        let targetBmapTx = bmapTx
         if (bmapTx.MAP){
             if (bmapTx.MAP[0].type === "like"){
                 targetTxid = bmapTx.MAP[0].tx
                 const targetTxHex = await fetchTransaction({ txid: targetTxid})
-                const targetBmapTx = await bmapParseTransaction(targetTxHex)
+                targetBmapTx = await bmapParseTransaction(targetTxHex)
                 await ingestBmapTransaction(targetBmapTx)
             } else {
                 await ingestBmapTransaction(bmapTx)
@@ -119,6 +147,7 @@ export async function start(){
                 unixtime: blockHeader.time,
                 satoshis,
                 blockHeight: BigInt(Number(lockUntilHeight.toString())),
+                vibes: satoshis * Math.log10(lockUntilHeight),
                 transaction: {
                     connectOrCreate: {
                         where: {
@@ -129,14 +158,38 @@ export async function start(){
                             block: blockHeight
                         }
                     }
-                } ,
-                lockTarget: {
+                },
+                app: bmapTx.MAP[0].app,
+                postLockTarget: {
+                    connectOrCreate: {
+                      where: {
+                        txid: targetTxid
+                      },
+                      create: {
+                        txid: targetTxid,
+                        unixtime: targetBmapTx.blk.t,
+                        content: targetBmapTx.B[0].content,
+                        contentType: targetBmapTx.B[0]["content-type"],
+                        inReplyTo: targetBmapTx.MAP[0].context === "tx" ? targetBmapTx.MAP[0].tx : null,
+                        app: targetBmapTx.MAP[0].app,
+                        postedByUserAddress: targetBmapTx.in[0].e.a,
+                      }
+                    }
+                },
+                messageLockTarget: {
                     connectOrCreate: {
                         where: {
-                            hash: targetTxid
+                        txid: targetTxid
                         },
                         create: {
-                            hash: targetTxid
+                            txid: targetTxid,
+                            unixtime: targetBmapTx.blk.t,
+                            content: targetBmapTx.B[0].content,
+                            contentType: targetBmapTx.B[0]["content-type"],
+                            inReplyTo: targetBmapTx.MAP[0].context === "tx" ? targetBmapTx.MAP[0].tx : null,
+                            app: targetBmapTx.MAP[0].app,
+                            channel: targetBmapTx.MAP[0].channel,
+                            sentByUserAddress: targetBmapTx.in[0].e.a,
                         }
                     }
                 },
@@ -147,6 +200,7 @@ export async function start(){
                         },
                         create: {
                             address: address,
+                            paymail: bmapTx.MAP[0].paymail
                         }
                     }
                 }

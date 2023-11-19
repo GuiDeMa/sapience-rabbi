@@ -17,7 +17,6 @@ model Transaction {
   post    Post?    @relation(name: "Transactions")
   message Message? @relation(name: "Transactions")
   lock    Lock?    @relation(name: "Transactions")
-  locks   Lock[]   @relation(name: "LockTo")
 }
 
 model User {
@@ -40,6 +39,7 @@ model Post {
   postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
   postedByUserAddress String
   app                 String
+  locks               Lock[]      @relation(name: "LockToPost")
 }
 
 model Message {
@@ -54,6 +54,7 @@ model Message {
   app               String
   sentBy            User        @relation(name: "Messages", fields: [sentByUserAddress], references: [address])
   sentByUserAddress String
+  locks             Lock[]      @relation(name: "LockToMessage")
 }
 
 model Lock {
@@ -63,8 +64,12 @@ model Lock {
   unixtime            Int
   satoshis            BigInt
   blockHeight         BigInt
-  lockTarget          Transaction @relation(name: "LockTo", fields: [lockTargetByTxid], references: [hash]) // Can be Post or Message
+  vibes               Float
+  postLockTarget      Post?       @relation(name: "LockToPost", fields: [lockTargetByTxid], references: [txid], map: "lockToPost")
+  messageLockTarget   Message?    @relation(name: "LockToMessage", fields: [lockTargetByTxid], references: [txid], map: "lockToMessage")
   lockTargetByTxid    String
   locker              User        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
   lockerByUserAddress String
+  lockerByUserPaymail String?
+  app                 String?
 }
