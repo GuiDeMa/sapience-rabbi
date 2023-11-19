@@ -153,7 +153,7 @@ export const LockMutation = extendType({
                   unixtime: postLockTarget.unixtime,
                   content: postLockTarget.content,
                   contentType: postLockTarget.contentType,
-                  inReplyTo: postLockTarget.inReplyTo,
+                  inReplyToTx: postLockTarget.inReplyToTx,
                   app: postLockTarget.app,
                   postedByUserAddress: postLockTarget.postedByUserAddress,
                 }
@@ -169,7 +169,7 @@ export const LockMutation = extendType({
                   unixtime: messageLockTarget.unixtime,
                   content: messageLockTarget.content,
                   contentType: messageLockTarget.contentType,
-                  inReplyTo: messageLockTarget.inReplyTo,
+                  inReplyToTx: messageLockTarget.inReplyToTx,
                   app: messageLockTarget.app,
                   channel: messageLockTarget.app,
                   sentByUserAddress: messageLockTarget.sentByUserAddress

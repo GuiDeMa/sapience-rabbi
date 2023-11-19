@@ -35,11 +35,13 @@ model Post {
   unixtime            Int
   content             String
   contentType         String
-  inReplyTo           String?
+  inReplyToPost       Post?       @relation(name: "PostReplies", fields: [inReplyToTx], references: [txid])
+  inReplyToTx         String?
   postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
   postedByUserAddress String
-  app                 String
+  app                 String?
   locks               Lock[]      @relation(name: "LockToPost")
+  replies             Post[]      @relation(name: "PostReplies")
 }
 
 model Message {
@@ -50,11 +52,13 @@ model Message {
   channel           String      @unique
   content           String
   contentType       String
-  inReplyTo         String
-  app               String
+  inReplyToMessage  Message?    @relation(name: "MessageReplies", fields: [inReplyToTx], references: [txid])
+  inReplyToTx       String?
+  app               String?
   sentBy            User        @relation(name: "Messages", fields: [sentByUserAddress], references: [address])
   sentByUserAddress String
   locks             Lock[]      @relation(name: "LockToMessage")
+  replies           Message[]   @relation(name: "MessageReplies")
 }
 
 model Lock {

@@ -82,7 +82,6 @@ export interface NexusGenObjects {
     content: string; // String!
     contentType: string; // String!
     id: number; // Int!
-    inReplyTo?: string | null; // String
     txid: string; // String!
     unixtime: number; // Int!
   }
@@ -92,7 +91,6 @@ export interface NexusGenObjects {
     content: string; // String!
     contentType: string; // String!
     id: number; // Int!
-    inReplyTo?: string | null; // String
     txid: string; // String!
     unixtime: number; // Int!
   }
@@ -159,8 +157,8 @@ export interface NexusGenFieldTypes {
     content: string; // String!
     contentType: string; // String!
     id: number; // Int!
-    inReplyTo: string | null; // String
-    sentBy: NexusGenRootTypes['User'] | null; // User
+    inReplyTo: NexusGenRootTypes['Message'] | null; // Message
+    sentBy: NexusGenRootTypes['User']; // User!
     txid: string; // String!
     unixtime: number; // Int!
   }
@@ -176,8 +174,8 @@ export interface NexusGenFieldTypes {
     content: string; // String!
     contentType: string; // String!
     id: number; // Int!
-    inReplyTo: string | null; // String
-    postedBy: NexusGenRootTypes['User'] | null; // User
+    inReplyTo: NexusGenRootTypes['Post'] | null; // Post
+    postedBy: NexusGenRootTypes['User']; // User!
     txid: string; // String!
     unixtime: number; // Int!
   }
@@ -246,7 +244,7 @@ export interface NexusGenFieldTypeNames {
     content: 'String'
     contentType: 'String'
     id: 'Int'
-    inReplyTo: 'String'
+    inReplyTo: 'Message'
     sentBy: 'User'
     txid: 'String'
     unixtime: 'Int'
@@ -263,7 +261,7 @@ export interface NexusGenFieldTypeNames {
     content: 'String'
     contentType: 'String'
     id: 'Int'
-    inReplyTo: 'String'
+    inReplyTo: 'Post'
     postedBy: 'User'
     txid: 'String'
     unixtime: 'Int'
@@ -316,9 +314,11 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Mutation: {
     lock: { // args
+      app?: string | null; // String
       blockHeight: number; // Int!
       lockTargetByTxid: string; // String!
       lockerByUserAddress: string; // String!
+      lockerByUserPaymail?: string | null; // String
       satoshis: number; // Int!
       txid: string; // String!
       unixtime: number; // Int!
@@ -338,7 +338,7 @@ export interface NexusGenArgTypes {
       app?: string | null; // String
       content: string; // String!
       contentType: string; // String!
-      inReplyTo?: string | null; // String
+      inReplyToTx?: string | null; // String
       postedByUserAddress: string; // String!
       postedByUserPaymail?: string | null; // String
       txid: string; // String!

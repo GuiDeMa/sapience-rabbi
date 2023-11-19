@@ -1,6 +1,7 @@
 import { inputObjectType, objectType, enumType, extendType, stringArg, intArg, arg, list, nonNull } from "nexus";
 import { Prisma } from "@prisma/client";
 import { Sort } from "./Sort";
+import { string } from "joi";
 
 export const Post = objectType({
   name: "Post",
@@ -10,9 +11,14 @@ export const Post = objectType({
     t.nonNull.int("unixtime");
     t.nonNull.string("content");
     t.nonNull.string("contentType");
-    t.string("inReplyTo");
+    t.field("inReplyTo", {
+      type: "Post",
+      resolve(parent, args, context) {
+        return context.prisma.post.findUnique({ where: {txid: parent.txid}})
+      }
+    });
     t.string("app");
-    t.field("postedBy", {
+    t.nonNull.field("postedBy", {
       type: "User",
       resolve(parent, args, context) {
         return context.prisma.post.findUnique({ where: { txid: parent.txid } }).postedBy()
@@ -77,7 +83,7 @@ export interface NewPostProps {
   unixtime: number;
   content: string;
   contentType: string;
-  inReplyTo?: string;
+  inReplyToTx?: string;
   postedByUserAddress: string;
   postedByUserPaymail?: string;
   app?: string;
@@ -93,13 +99,13 @@ export const PostMutation = extendType({
         unixtime: nonNull(intArg()),
         content: nonNull(stringArg()),
         contentType: nonNull(stringArg()),
-        inReplyTo: stringArg(),
+        inReplyToTx: stringArg(),
         postedByUserAddress: nonNull(stringArg()),
         postedByUserPaymail: stringArg(),
         app: stringArg()
       },
       async resolve(parent, args: NewPostProps, context) {
-        const { txid, unixtime, content, contentType, inReplyTo, postedByUserAddress, postedByUserPaymail, app } = args
+        const { txid, unixtime, content, contentType, inReplyToTx, postedByUserAddress, postedByUserPaymail, app } = args
         /* const { userId } = context;
         
         if (!userId) {
@@ -118,7 +124,11 @@ export const PostMutation = extendType({
             unixtime,
             content,
             contentType,
-            inReplyTo,
+            inReplyToPost: {
+              connect: {
+                txid: inReplyToTx
+              }
+            },
             postedBy: {
               connectOrCreate: {
                 where: { address: postedByUserAddress },

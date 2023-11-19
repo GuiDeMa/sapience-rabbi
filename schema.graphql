@@ -36,8 +36,8 @@ type Message {
   content: String!
   contentType: String!
   id: Int!
-  inReplyTo: String
-  sentBy: User
+  inReplyTo: Message
+  sentBy: User!
   txid: String!
   unixtime: Int!
 }
@@ -47,9 +47,9 @@ input MessageOrderByInput {
 }
 
 type Mutation {
-  lock(blockHeight: Int!, lockTargetByTxid: String!, lockerByUserAddress: String!, satoshis: Int!, txid: String!, unixtime: Int!): Lock!
+  lock(app: String, blockHeight: Int!, lockTargetByTxid: String!, lockerByUserAddress: String!, lockerByUserPaymail: String, satoshis: Int!, txid: String!, unixtime: Int!): Lock!
   message(app: String, channel: String!, content: String!, contentType: String!, inReplyTo: String, sentByUserAddress: String!, sentByUserPaymail: String, txid: String!, unixtime: Int!): Message!
-  post(app: String, content: String!, contentType: String!, inReplyTo: String, postedByUserAddress: String!, postedByUserPaymail: String, txid: String!, unixtime: Int!): Post!
+  post(app: String, content: String!, contentType: String!, inReplyToTx: String, postedByUserAddress: String!, postedByUserPaymail: String, txid: String!, unixtime: Int!): Post!
   transaction(block: Int, hash: String!): Transaction!
   user(address: String!, paymail: String): User!
 }
@@ -59,8 +59,8 @@ type Post {
   content: String!
   contentType: String!
   id: Int!
-  inReplyTo: String
-  postedBy: User
+  inReplyTo: Post
+  postedBy: User!
   txid: String!
   unixtime: Int!
 }

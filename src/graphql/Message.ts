@@ -11,9 +11,14 @@ export const Message = objectType({
     t.nonNull.int("unixtime");
     t.nonNull.string("content");
     t.nonNull.string("contentType");
-    t.string("inReplyTo");
+    t.field("inReplyTo", {
+      type: "Message",
+      resolve(parent, args, context) {
+        return context.prisma.message.findUnique({ where: { txid: parent.txid } })
+      }
+    });
     t.string("app");
-    t.field("sentBy", {
+    t.nonNull.field("sentBy", {
       type: "User",
       resolve(parent, args, context) {
         return context.prisma.message.findUnique({ where: { txid: parent.txid } }).sentBy()
@@ -78,7 +83,7 @@ export interface NewMessageProps {
   unixtime: number;
   content: string;
   contentType: string;
-  inReplyTo?: string;
+  inReplyToTx?: string;
   sentByUserAddress: string;
   sentByUserPaymail?: string;
   app?: string;
@@ -95,14 +100,14 @@ export const MessageMutation = extendType({
         unixtime: nonNull(intArg()),
         content: nonNull(stringArg()),
         contentType: nonNull(stringArg()),
-        inReplyTo: stringArg(),
+        inReplyToTx: stringArg(),
         sentByUserAddress: nonNull(stringArg()),
         sentByUserPaymail: stringArg(),
         app: stringArg(),
         channel: nonNull(stringArg())
       },
       async resolve(parent, args: NewMessageProps, context) {
-        const { txid, unixtime, content, contentType, inReplyTo, sentByUserAddress, sentByUserPaymail, app, channel } = args
+        const { txid, unixtime, content, contentType, inReplyToTx, sentByUserAddress, sentByUserPaymail, app, channel } = args
         
         /* const { userId } = context;
         
@@ -122,7 +127,11 @@ export const MessageMutation = extendType({
             unixtime,
             content,
             contentType,
-            inReplyTo,
+            inReplyToMessage: {
+              connect: {
+                txid: inReplyToTx
+              }
+            },
             sentBy: {
               connectOrCreate: {
                 where: { address: sentByUserAddress },
