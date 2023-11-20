@@ -101,7 +101,6 @@ export async function start(){
             }
         }
 
-        console.log("lock target", targetBmapTx)
         const response = await prisma.lock.upsert({
             where: { txid },
             create: {
