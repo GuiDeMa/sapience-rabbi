@@ -10,67 +10,44 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Transaction {
-  id      Int      @id @default(autoincrement())
-  hash    String   @unique
-  block   Int?
-  post    Post?    @relation(name: "Transactions")
-  message Message? @relation(name: "Transactions")
-  lock    Lock?    @relation(name: "Transactions")
-}
-
 model User {
   id       Int       @id @default(autoincrement())
   address  String    @unique
   paymail  String?
   posts    Post[]    @relation(name: "Posts")
-  messages Message[] @relation(name: "Messages")
   locks    Lock[]    @relation(name: "Locks")
+}
+
+enum Type {
+  post
+  message
 }
 
 model Post {
   id                  Int         @id @default(autoincrement())
   txid                String      @unique
-  transaction         Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
   unixtime            Int
   content             String
   contentType         String
-  inReplyToPost       Post?       @relation(name: "PostReplies", fields: [inReplyToTx], references: [txid])
+  type  Type
+  inReplyTo       Post?       @relation(name: "Replies", fields: [inReplyToTx], references: [txid])
   inReplyToTx         String?
   postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
   postedByUserAddress String
   app                 String?
-  locks               Lock[]      @relation(name: "LockToPost")
-  replies             Post[]      @relation(name: "PostReplies")
-}
-
-model Message {
-  id                Int         @id @default(autoincrement())
-  txid              String      @unique
-  transaction       Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
-  unixtime          Int
-  channel           String      @unique
-  content           String
-  contentType       String
-  inReplyToMessage  Message?    @relation(name: "MessageReplies", fields: [inReplyToTx], references: [txid])
-  inReplyToTx       String?
-  app               String?
-  sentBy            User        @relation(name: "Messages", fields: [sentByUserAddress], references: [address])
-  sentByUserAddress String
-  locks             Lock[]      @relation(name: "LockToMessage")
-  replies           Message[]   @relation(name: "MessageReplies")
+  channel String?
+  locks               Lock[]      @relation(name: "LockTo")
+  replies             Post[]      @relation(name: "Replies")
 }
 
 model Lock {
   id                  Int         @id @default(autoincrement())
   txid                String      @unique
-  transaction         Transaction @relation(name: "Transactions", fields: [txid], references: [hash])
   unixtime            Int
   satoshis            BigInt
   blockHeight         BigInt
   vibes               Float
-  postLockTarget      Post?       @relation(name: "LockToPost", fields: [lockTargetByTxid], references: [txid], map: "lockToPost")
-  messageLockTarget   Message?    @relation(name: "LockToMessage", fields: [lockTargetByTxid], references: [txid], map: "lockToMessage")
+  lockTarget      Post?       @relation(name: "LockTo", fields: [lockTargetByTxid], references: [txid])
   lockTargetByTxid    String
   locker              User        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
   lockerByUserAddress String

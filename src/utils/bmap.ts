@@ -22,121 +22,54 @@ export async function ingestBmapTransaction(bmapTx) {
         const replyBmapTx = await bmapParseTransaction(replyTxHex)
         await ingestBmapTransaction(replyBmapTx)
     }
-    //console.log(bmapTx)
-    if (bmapTx.MAP[0].type === "post"){
-        try {
-            
-            const newPost = await prisma.post.upsert({
-                where: { txid },
-                create: {
-                    transaction: {
-                        connectOrCreate: {
-                            where: {
-                                hash: txid
-                            },
-                            create: {
-                                hash: txid
-                            }
-                        }
-                    },
-                    unixtime: bmapTx.blk ? bmapTx.blk.t : new Date().getTime() / 1000,
-                    content: bmapTx.B[0].content,
-                    contentType: bmapTx.B[0]["content-type"],
-                    inReplyToPost: bmapTx.MAP[0].tx ? {
-                        connect: {
-                            txid: bmapTx.MAP[0].tx
-                        }
-                    } : {},
-                    postedBy: {
-                        connectOrCreate: {
-                            where: {
-                                address: address
-                            },
-                            create: {
-                                address,
-                                paymail
-                            }
-                        },
-                    },
-                    app: bmapTx.MAP[0].app ? bmapTx.MAP[0].app : null 
-                },
-                update: {
-                    postedBy: {
-                        connectOrCreate: {
-                            where: {
-                                address: address
-                            },
-                            create: {
-                                address,
-                                paymail
-                            }
-                        },
-                    }
-                }
-            })
-            console.log(`ingest.post.response`, newPost)
-            response = newPost
-        } catch (error) {
-            console.log("ingest.post.error", error)
-        }
-    } else if (bmapTx.MAP[0].type === "message"){
-        try {
-            const newMessage = await prisma.message.upsert({
-                where: { txid },
-                create: {
-                    transaction: {
-                        connectOrCreate: {
-                            where: {
-                                hash: txid
-                            },
-                            create: {
-                                hash: txid
-                            }
-                        }
-                    },
-                    unixtime: bmapTx.blk ? bmapTx.blk.t : new Date().getTime() / 1000,
-                    content: bmapTx.B[0].content,
-                    contentType: bmapTx.B[0]["content-type"],
-                    inReplyToMessage: bmapTx.MAP[0].tx ? {
-                        connect: {
-                            txid: bmapTx.MAP[0].tx
-                        }
-                    } : {},
-                    sentBy: {
-                        connectOrCreate: {
-                            where: {
-                                address: address
-                            },
-                            create: {
-                                address,
-                                paymail
-                            }
-                        },
-                    },
-                    app: bmapTx.MAP[0].app ? bmapTx.MAP[0].app : null,
-                    channel: bmapTx.MAP[0].channel
-                },
-                update: {
-                    sentBy: {
-                        connectOrCreate: {
-                            where: {
-                                address: address
-                            },
-                            create: {
-                                address,
-                                paymail
-                            }
-                        },
-                    }
-                }
-            })
     
-            console.log(`ingest.message.response`, newMessage)
-            response = newMessage
-        } catch (error) {
-            console.log("ingest.message.error", error)
-        }
+    try {
         
+        const newPost = await prisma.post.upsert({
+            where: { txid },
+            create: {
+                txid,
+                unixtime: bmapTx.blk ? bmapTx.blk.t : new Date().getTime() / 1000,
+                content: bmapTx.B[0].content,
+                type: bmapTx.MAP[0].type,
+                contentType: bmapTx.B[0]["content-type"],
+                inReplyTo: bmapTx.MAP[0].tx ? {
+                    connect: {
+                        txid: bmapTx.MAP[0].tx
+                    }
+                } : {},
+                postedBy: {
+                    connectOrCreate: {
+                        where: {
+                            address: address
+                        },
+                        create: {
+                            address,
+                            paymail
+                        }
+                    },
+                },
+                app: bmapTx.MAP[0].app ? bmapTx.MAP[0].app : null, 
+                channel: bmapTx.MAP[0].channel ? bmapTx.MAP[0].channel : null
+            },
+            update: {
+                postedBy: {
+                    connectOrCreate: {
+                        where: {
+                            address: address
+                        },
+                        create: {
+                            address,
+                            paymail
+                        }
+                    },
+                }
+            }
+        })
+        console.log(`ingest.post.response`, newPost)
+        response = newPost
+    } catch (error) {
+        console.log("ingest.post.error", error)
     }
 
     return response

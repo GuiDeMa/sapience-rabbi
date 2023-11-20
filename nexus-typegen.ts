@@ -328,7 +328,7 @@ export interface NexusGenArgTypes {
       channel: string; // String!
       content: string; // String!
       contentType: string; // String!
-      inReplyTo?: string | null; // String
+      inReplyToTx?: string | null; // String
       sentByUserAddress: string; // String!
       sentByUserPaymail?: string | null; // String
       txid: string; // String!

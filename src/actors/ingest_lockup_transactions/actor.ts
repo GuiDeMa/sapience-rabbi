@@ -44,53 +44,14 @@ export async function start(){
         const response = await prisma.lock.upsert({
             where: { txid },
             create: {
+                txid,
                 satoshis,
                 blockHeight: BigInt(Number(lockUntilHeight.toString())),
                 vibes: satoshis * Math.log10(lockUntilHeight),
                 unixtime: new Date().getTime() / 1000,
-                transaction: {
-                    connectOrCreate: {
-                        where: {
-                            hash: txid
-                        },
-                        create: {
-                            hash: txid,
-                        }
-                    }
-                },
                 app: bmapTx.MAP[0].app,
-                postLockTarget: {
-                    connectOrCreate: {
-                      where: {
-                        txid: targetTxid
-                      },
-                      create: {
-                        txid: targetTxid,
-                        unixtime: new Date().getTime() / 1000,
-                        content: targetBmapTx.B[0].content,
-                        contentType: targetBmapTx.B[0]["content-type"],
-                        inReplyToTx: targetBmapTx.MAP[0].context === "tx" ? targetBmapTx.MAP[0].tx : null,
-                        app: targetBmapTx.MAP[0].app,
-                        postedByUserAddress: targetBmapTx.in[0].e.a,
-                      }
-                    }
-                },
-                messageLockTarget: {
-                    connectOrCreate: {
-                        where: {
-                            txid: targetTxid
-                        },
-                        create: {
-                            txid: targetTxid,
-                            unixtime: new Date().getTime() / 1000,
-                            content: targetBmapTx.B[0].content,
-                            contentType: targetBmapTx.B[0]["content-type"],
-                            inReplyToTx: targetBmapTx.MAP[0].context === "tx" ? targetBmapTx.MAP[0].tx : null,
-                            app: targetBmapTx.MAP[0].app,
-                            channel: targetBmapTx.MAP[0].channel,
-                            sentByUserAddress: targetBmapTx.in[0].e.a,
-                        }
-                    }
+                lockTarget: {
+                    connect: { txid }
                 },
                 locker: {
                     connectOrCreate: {
@@ -144,26 +105,15 @@ export async function start(){
         const response = await prisma.lock.upsert({
             where: { txid },
             create: {
+                txid,
                 unixtime: blockHeader.time,
                 satoshis,
                 blockHeight: BigInt(Number(lockUntilHeight.toString())),
                 vibes: satoshis * Math.log10(lockUntilHeight),
-                transaction: {
-                    connectOrCreate: {
-                        where: {
-                            hash: txid
-                        },
-                        create: {
-                            hash: txid,
-                            block: blockHeight
-                        }
-                    }
-                },
                 app: bmapTx.MAP[0].app,
-                postLockTarget:  {
+                lockTarget:  {
                     connect: { txid: targetTxid }
                 },
-                
                 locker: {
                     connectOrCreate: {
                         where: {
