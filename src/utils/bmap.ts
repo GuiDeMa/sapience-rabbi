@@ -42,11 +42,11 @@ export async function ingestBmapTransaction(bmapTx) {
                     unixtime: bmapTx.blk ? bmapTx.blk.t : new Date().getTime() / 1000,
                     content: bmapTx.B[0].content,
                     contentType: bmapTx.B[0]["content-type"],
-                    inReplyToPost: {
+                    inReplyToPost: bmapTx.MAP[0].tx ? {
                         connect: {
                             txid: bmapTx.MAP[0].tx
                         }
-                    },
+                    } : {},
                     postedBy: {
                         connectOrCreate: {
                             where: {
@@ -97,11 +97,11 @@ export async function ingestBmapTransaction(bmapTx) {
                     unixtime: bmapTx.blk ? bmapTx.blk.t : new Date().getTime() / 1000,
                     content: bmapTx.B[0].content,
                     contentType: bmapTx.B[0]["content-type"],
-                    inReplyToMessage: {
+                    inReplyToMessage: bmapTx.MAP[0].tx ? {
                         connect: {
                             txid: bmapTx.MAP[0].tx
                         }
-                    },
+                    } : {},
                     sentBy: {
                         connectOrCreate: {
                             where: {
