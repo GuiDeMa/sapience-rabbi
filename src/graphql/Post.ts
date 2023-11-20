@@ -11,6 +11,7 @@ export const Post = objectType({
     t.nonNull.int("unixtime");
     t.nonNull.string("content");
     t.nonNull.string("contentType");
+    t.nonNull.string("type");
     t.field("inReplyTo", {
       type: "Post",
       resolve(parent, args, context) {
@@ -18,6 +19,7 @@ export const Post = objectType({
       }
     });
     t.string("app");
+    t.string("channel")
     t.nonNull.field("postedBy", {
       type: "User",
       resolve(parent, args, context) {
@@ -83,10 +85,12 @@ export interface NewPostProps {
   unixtime: number;
   content: string;
   contentType: string;
+  type: "post" | "message";
   inReplyToTx?: string;
   postedByUserAddress: string;
   postedByUserPaymail?: string;
   app?: string;
+  channel?: string;
 }
 
 export const PostMutation = extendType({
@@ -99,13 +103,15 @@ export const PostMutation = extendType({
         unixtime: nonNull(intArg()),
         content: nonNull(stringArg()),
         contentType: nonNull(stringArg()),
+        type: nonNull(stringArg()),
         inReplyToTx: stringArg(),
         postedByUserAddress: nonNull(stringArg()),
         postedByUserPaymail: stringArg(),
-        app: stringArg()
+        app: stringArg(),
+        channel: stringArg()
       },
       async resolve(parent, args: NewPostProps, context) {
-        const { txid, unixtime, content, contentType, inReplyToTx, postedByUserAddress, postedByUserPaymail, app } = args
+        const { txid, unixtime, content, contentType, type, inReplyToTx, postedByUserAddress, postedByUserPaymail, app, channel } = args
         /* const { userId } = context;
         
         if (!userId) {
@@ -115,16 +121,12 @@ export const PostMutation = extendType({
         const newPost = context.prisma.post.upsert({
           where: { txid },
           create: {
-            transaction: {
-              connectOrCreate: {
-                where: { hash: txid},
-                create: { hash: txid}
-              }
-            },
+            txid,
             unixtime,
             content,
             contentType,
-            inReplyToPost: {
+            type,
+            inReplyTo: {
               connect: {
                 txid: inReplyToTx
               }
@@ -138,7 +140,8 @@ export const PostMutation = extendType({
                 }
               }
             },
-            app
+            app,
+            channel
           },
           update: {
             postedBy: {
@@ -152,7 +155,6 @@ export const PostMutation = extendType({
             },
           },
           include: {
-            transaction: true,
             postedBy: true
           }
         })

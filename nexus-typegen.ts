@@ -40,9 +40,6 @@ export interface NexusGenInputs {
   LockOrderByInput: { // input type
     unixtime?: NexusGenEnums['Sort'] | null; // Sort
   }
-  MessageOrderByInput: { // input type
-    unixtime?: NexusGenEnums['Sort'] | null; // Sort
-  }
   PostOrderByInput: { // input type
     unixtime?: NexusGenEnums['Sort'] | null; // Sort
   }
@@ -76,30 +73,18 @@ export interface NexusGenObjects {
     unixtime: number; // Int!
     vibes: number; // Float!
   }
-  Message: { // root type
-    app?: string | null; // String
-    channel: string; // String!
-    content: string; // String!
-    contentType: string; // String!
-    id: number; // Int!
-    txid: string; // String!
-    unixtime: number; // Int!
-  }
   Mutation: {};
   Post: { // root type
     app?: string | null; // String
+    channel?: string | null; // String
     content: string; // String!
     contentType: string; // String!
     id: number; // Int!
     txid: string; // String!
+    type: string; // String!
     unixtime: number; // Int!
   }
   Query: {};
-  Transaction: { // root type
-    block?: NexusGenScalars['BigInt'] | null; // BigInt
-    hash: string; // String!
-    id: number; // Int!
-  }
   User: { // root type
     address: string; // String!
     id: number; // Int!
@@ -109,11 +94,6 @@ export interface NexusGenObjects {
     count: number; // Int!
     id?: string | null; // ID
     locks: NexusGenRootTypes['Lock'][]; // [Lock!]!
-  }
-  allMessages: { // root type
-    count: number; // Int!
-    id?: string | null; // ID
-    messages: NexusGenRootTypes['Message'][]; // [Message!]!
   }
   allPosts: { // root type
     count: number; // Int!
@@ -139,66 +119,43 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 
 export interface NexusGenFieldTypes {
   Lock: { // field return type
-    MessageLockTarget: NexusGenRootTypes['Message'] | null; // Message
     app: string | null; // String
     blockHeight: NexusGenScalars['BigInt']; // BigInt!
     id: number; // Int!
+    lockTarget: NexusGenRootTypes['Post'] | null; // Post
     lockTargetByTxid: string; // String!
     locker: NexusGenRootTypes['User']; // User!
-    postLockTarget: NexusGenRootTypes['Post'] | null; // Post
     satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
     unixtime: number; // Int!
     vibes: number; // Float!
   }
-  Message: { // field return type
-    app: string | null; // String
-    channel: string; // String!
-    content: string; // String!
-    contentType: string; // String!
-    id: number; // Int!
-    inReplyTo: NexusGenRootTypes['Message'] | null; // Message
-    sentBy: NexusGenRootTypes['User']; // User!
-    txid: string; // String!
-    unixtime: number; // Int!
-  }
   Mutation: { // field return type
     lock: NexusGenRootTypes['Lock']; // Lock!
-    message: NexusGenRootTypes['Message']; // Message!
     post: NexusGenRootTypes['Post']; // Post!
-    transaction: NexusGenRootTypes['Transaction']; // Transaction!
     user: NexusGenRootTypes['User']; // User!
   }
   Post: { // field return type
     app: string | null; // String
+    channel: string | null; // String
     content: string; // String!
     contentType: string; // String!
     id: number; // Int!
     inReplyTo: NexusGenRootTypes['Post'] | null; // Post
     postedBy: NexusGenRootTypes['User']; // User!
     txid: string; // String!
+    type: string; // String!
     unixtime: number; // Int!
   }
   Query: { // field return type
     allLocks: NexusGenRootTypes['allLocks']; // allLocks!
-    allMessages: NexusGenRootTypes['allMessages']; // allMessages!
     allPosts: NexusGenRootTypes['allPosts']; // allPosts!
     allUsers: NexusGenRootTypes['allUsers']; // allUsers!
-  }
-  Transaction: { // field return type
-    block: NexusGenScalars['BigInt'] | null; // BigInt
-    hash: string; // String!
-    id: number; // Int!
-    lock: NexusGenRootTypes['Lock'] | null; // Lock
-    locks: Array<NexusGenRootTypes['Lock'] | null>; // [Lock]!
-    message: NexusGenRootTypes['Message'] | null; // Message
-    post: NexusGenRootTypes['Post'] | null; // Post
   }
   User: { // field return type
     address: string; // String!
     id: number; // Int!
     locks: NexusGenRootTypes['Lock'][]; // [Lock!]!
-    messages: NexusGenRootTypes['Message'][]; // [Message!]!
     paymail: string | null; // String
     posts: NexusGenRootTypes['Post'][]; // [Post!]!
   }
@@ -206,11 +163,6 @@ export interface NexusGenFieldTypes {
     count: number; // Int!
     id: string | null; // ID
     locks: NexusGenRootTypes['Lock'][]; // [Lock!]!
-  }
-  allMessages: { // field return type
-    count: number; // Int!
-    id: string | null; // ID
-    messages: NexusGenRootTypes['Message'][]; // [Message!]!
   }
   allPosts: { // field return type
     count: number; // Int!
@@ -226,66 +178,43 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   Lock: { // field return type name
-    MessageLockTarget: 'Message'
     app: 'String'
     blockHeight: 'BigInt'
     id: 'Int'
+    lockTarget: 'Post'
     lockTargetByTxid: 'String'
     locker: 'User'
-    postLockTarget: 'Post'
     satoshis: 'BigInt'
     txid: 'String'
     unixtime: 'Int'
     vibes: 'Float'
   }
-  Message: { // field return type name
-    app: 'String'
-    channel: 'String'
-    content: 'String'
-    contentType: 'String'
-    id: 'Int'
-    inReplyTo: 'Message'
-    sentBy: 'User'
-    txid: 'String'
-    unixtime: 'Int'
-  }
   Mutation: { // field return type name
     lock: 'Lock'
-    message: 'Message'
     post: 'Post'
-    transaction: 'Transaction'
     user: 'User'
   }
   Post: { // field return type name
     app: 'String'
+    channel: 'String'
     content: 'String'
     contentType: 'String'
     id: 'Int'
     inReplyTo: 'Post'
     postedBy: 'User'
     txid: 'String'
+    type: 'String'
     unixtime: 'Int'
   }
   Query: { // field return type name
     allLocks: 'allLocks'
-    allMessages: 'allMessages'
     allPosts: 'allPosts'
     allUsers: 'allUsers'
-  }
-  Transaction: { // field return type name
-    block: 'BigInt'
-    hash: 'String'
-    id: 'Int'
-    lock: 'Lock'
-    locks: 'Lock'
-    message: 'Message'
-    post: 'Post'
   }
   User: { // field return type name
     address: 'String'
     id: 'Int'
     locks: 'Lock'
-    messages: 'Message'
     paymail: 'String'
     posts: 'Post'
   }
@@ -293,11 +222,6 @@ export interface NexusGenFieldTypeNames {
     count: 'Int'
     id: 'ID'
     locks: 'Lock'
-  }
-  allMessages: { // field return type name
-    count: 'Int'
-    id: 'ID'
-    messages: 'Message'
   }
   allPosts: { // field return type name
     count: 'Int'
@@ -323,30 +247,17 @@ export interface NexusGenArgTypes {
       txid: string; // String!
       unixtime: number; // Int!
     }
-    message: { // args
-      app?: string | null; // String
-      channel: string; // String!
-      content: string; // String!
-      contentType: string; // String!
-      inReplyToTx?: string | null; // String
-      sentByUserAddress: string; // String!
-      sentByUserPaymail?: string | null; // String
-      txid: string; // String!
-      unixtime: number; // Int!
-    }
     post: { // args
       app?: string | null; // String
+      channel?: string | null; // String
       content: string; // String!
       contentType: string; // String!
       inReplyToTx?: string | null; // String
       postedByUserAddress: string; // String!
       postedByUserPaymail?: string | null; // String
       txid: string; // String!
+      type: string; // String!
       unixtime: number; // Int!
-    }
-    transaction: { // args
-      block?: number | null; // Int
-      hash: string; // String!
     }
     user: { // args
       address: string; // String!
@@ -357,13 +268,6 @@ export interface NexusGenArgTypes {
     allLocks: { // args
       filter?: string | null; // String
       orderBy?: NexusGenInputs['LockOrderByInput'][] | null; // [LockOrderByInput!]
-      skip?: number | null; // Int
-      take?: number | null; // Int
-    }
-    allMessages: { // args
-      channel: string; // String!
-      filter?: string | null; // String
-      orderBy?: NexusGenInputs['MessageOrderByInput'][] | null; // [MessageOrderByInput!]
       skip?: number | null; // Int
       take?: number | null; // Int
     }

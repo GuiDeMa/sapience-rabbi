@@ -13,13 +13,12 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTime
 
 type Lock {
-  MessageLockTarget: Message
   app: String
   blockHeight: BigInt!
   id: Int!
+  lockTarget: Post
   lockTargetByTxid: String!
   locker: User!
-  postLockTarget: Post
   satoshis: BigInt!
   txid: String!
   unixtime: Int!
@@ -30,38 +29,22 @@ input LockOrderByInput {
   unixtime: Sort
 }
 
-type Message {
-  app: String
-  channel: String!
-  content: String!
-  contentType: String!
-  id: Int!
-  inReplyTo: Message
-  sentBy: User!
-  txid: String!
-  unixtime: Int!
-}
-
-input MessageOrderByInput {
-  unixtime: Sort
-}
-
 type Mutation {
   lock(app: String, blockHeight: Int!, lockTargetByTxid: String!, lockerByUserAddress: String!, lockerByUserPaymail: String, satoshis: Int!, txid: String!, unixtime: Int!): Lock!
-  message(app: String, channel: String!, content: String!, contentType: String!, inReplyToTx: String, sentByUserAddress: String!, sentByUserPaymail: String, txid: String!, unixtime: Int!): Message!
-  post(app: String, content: String!, contentType: String!, inReplyToTx: String, postedByUserAddress: String!, postedByUserPaymail: String, txid: String!, unixtime: Int!): Post!
-  transaction(block: Int, hash: String!): Transaction!
+  post(app: String, channel: String, content: String!, contentType: String!, inReplyToTx: String, postedByUserAddress: String!, postedByUserPaymail: String, txid: String!, type: String!, unixtime: Int!): Post!
   user(address: String!, paymail: String): User!
 }
 
 type Post {
   app: String
+  channel: String
   content: String!
   contentType: String!
   id: Int!
   inReplyTo: Post
   postedBy: User!
   txid: String!
+  type: String!
   unixtime: Int!
 }
 
@@ -71,7 +54,6 @@ input PostOrderByInput {
 
 type Query {
   allLocks(filter: String, orderBy: [LockOrderByInput!], skip: Int, take: Int): allLocks!
-  allMessages(channel: String!, filter: String, orderBy: [MessageOrderByInput!], skip: Int, take: Int): allMessages!
   allPosts(filter: String, orderBy: [PostOrderByInput!], skip: Int, take: Int): allPosts!
   allUsers(filter: String, orderBy: [UserOrderByInput!], skip: Int, take: Int): allUsers!
 }
@@ -81,21 +63,10 @@ enum Sort {
   desc
 }
 
-type Transaction {
-  block: BigInt
-  hash: String!
-  id: Int!
-  lock: Lock
-  locks: [Lock]!
-  message: Message
-  post: Post
-}
-
 type User {
   address: String!
   id: Int!
   locks: [Lock!]!
-  messages: [Message!]!
   paymail: String
   posts: [Post!]!
 }
@@ -108,12 +79,6 @@ type allLocks {
   count: Int!
   id: ID
   locks: [Lock!]!
-}
-
-type allMessages {
-  count: Int!
-  id: ID
-  messages: [Message!]!
 }
 
 type allPosts {

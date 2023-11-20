@@ -14,12 +14,6 @@ export const User = objectType({
         return context.prisma.user.findUnique({ where: { address : parent.address } }).posts()
       }
     })
-    t.nonNull.list.nonNull.field("messages", {
-      type: "Message",
-      resolve(parent, args, context) {
-        return context.prisma.user.findUnique({ where: { address: parent.address }}).messages()
-      }
-    })
     t.nonNull.list.nonNull.field("locks", { 
       type: "Lock",
       resolve(parent, args, context) {

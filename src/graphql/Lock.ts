@@ -2,7 +2,6 @@ import { arg, extendType, inputObjectType, intArg, list, nonNull, objectType, st
 import { Sort } from "./Sort";
 import { Prisma } from "@prisma/client";
 import { NewPostProps } from "./Post";
-import { NewMessageProps } from "./Message";
 
 export const Lock = objectType({
   name: "Lock",
@@ -21,18 +20,12 @@ export const Lock = objectType({
       }
     });
     t.nonNull.string("lockTargetByTxid");
-    t.field("postLockTarget", {
+    t.field("lockTarget", {
       type: "Post",
       resolve(parent, args, context) {
-        return context.prisma.lock.findFirst({ where: { lockTargetByTxid: parent.lockTargetByTxid}}).postLockTarget()
+        return context.prisma.lock.findFirst({ where: { lockTargetByTxid: parent.lockTargetByTxid}}).lockTarget()
       }
     });
-    t.field("MessageLockTarget", {
-      type: "Message",
-      resolve(parent, args, context) {
-        return context.prisma.lock.findFirst({ where: { lockTargetByTxid: parent.lockTargetByTxid}}).messageLockTarget()
-      }
-    });  
   },
 })
 
@@ -92,8 +85,7 @@ interface NewLockProps {
   satoshis: number;
   blockHeight: number;
   lockTargetByTxid: string;
-  postLockTarget?: NewPostProps;
-  messageLockTarget?: NewMessageProps;
+  lockTarget?: NewPostProps;
   lockerByUserAddress: string;
   lockerByUserPaymail?: string;
   app?: string;
@@ -115,7 +107,7 @@ export const LockMutation = extendType({
         app: stringArg()
       },
       async resolve(parent, args: NewLockProps, context) {
-        const { txid, unixtime, satoshis, blockHeight, lockTargetByTxid, postLockTarget, messageLockTarget, lockerByUserAddress, lockerByUserPaymail, app } = args
+        const { txid, unixtime, satoshis, blockHeight, lockTargetByTxid, lockTarget, lockerByUserAddress, lockerByUserPaymail, app } = args
 
         /* const { userId } = context;
         
@@ -128,51 +120,39 @@ export const LockMutation = extendType({
         const newLock = context.prisma.lock.upsert({
           where: { txid },
           create: {
-            transaction: {
-              connectOrCreate: {
-                where: {
-                  hash: txid
-                },
-                create: {
-                  hash: txid
-                }
-              },
-            },
+            txid,
             unixtime,
             satoshis,
             vibes,
             blockHeight,
             app,
-            postLockTarget: {
+            lockTarget: {
               connectOrCreate: {
                 where: {
                   txid: lockTargetByTxid
                 },
                 create: {
                   txid: lockTargetByTxid,
-                  unixtime: postLockTarget.unixtime,
-                  content: postLockTarget.content,
-                  contentType: postLockTarget.contentType,
-                  inReplyToTx: postLockTarget.inReplyToTx,
-                  app: postLockTarget.app,
-                  postedByUserAddress: postLockTarget.postedByUserAddress,
-                }
-              }
-            },
-            messageLockTarget: {
-              connectOrCreate: {
-                where: {
-                  txid: lockTargetByTxid
-                },
-                create: {
-                  txid: lockTargetByTxid,
-                  unixtime: messageLockTarget.unixtime,
-                  content: messageLockTarget.content,
-                  contentType: messageLockTarget.contentType,
-                  inReplyToTx: messageLockTarget.inReplyToTx,
-                  app: messageLockTarget.app,
-                  channel: messageLockTarget.app,
-                  sentByUserAddress: messageLockTarget.sentByUserAddress
+                  unixtime: lockTarget.unixtime,
+                  content: lockTarget.content,
+                  contentType: lockTarget.contentType,
+                  inReplyTo: {
+                    connect: { txid }
+                  },
+                  app: lockTarget.app,
+                  type: lockTarget.type,
+                  channel: lockTarget.channel,
+                  postedBy: {
+                    connectOrCreate: {
+                      where: {
+                        address: lockTarget.postedByUserAddress
+                      },
+                      create: {
+                        address: lockTarget.postedByUserAddress,
+                        paymail: lockTarget.postedByUserPaymail
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -188,7 +168,19 @@ export const LockMutation = extendType({
               }
             }
           },
-          update: {}
+          update: {
+            locker: {
+              connectOrCreate: {
+                where: {
+                  address: lockerByUserAddress
+                },
+                create: {
+                  address: lockerByUserAddress,
+                  paymail: lockerByUserPaymail
+                }
+              }
+            }
+          }
         })
 
         return newLock

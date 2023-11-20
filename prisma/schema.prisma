@@ -29,8 +29,8 @@ model Post {
   unixtime            Int
   content             String
   contentType         String
-  type  Type
-  inReplyTo       Post?       @relation(name: "Replies", fields: [inReplyToTx], references: [txid])
+  type                Type
+  inReplyTo           Post?       @relation(name: "Replies", fields: [inReplyToTx], references: [txid])
   inReplyToTx         String?
   postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
   postedByUserAddress String
@@ -47,7 +47,7 @@ model Lock {
   satoshis            BigInt
   blockHeight         BigInt
   vibes               Float
-  lockTarget      Post?       @relation(name: "LockTo", fields: [lockTargetByTxid], references: [txid])
+  lockTarget          Post       @relation(name: "LockTo", fields: [lockTargetByTxid], references: [txid])
   lockTargetByTxid    String
   locker              User        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
   lockerByUserAddress String
