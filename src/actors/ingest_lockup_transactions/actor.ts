@@ -161,37 +161,10 @@ export async function start(){
                 },
                 app: bmapTx.MAP[0].app,
                 postLockTarget: {
-                    connectOrCreate: {
-                      where: {
-                        txid: targetTxid
-                      },
-                      create: {
-                        txid: targetTxid,
-                        unixtime: targetBmapTx.blk.t,
-                        content: targetBmapTx.B[0].content,
-                        contentType: targetBmapTx.B[0]["content-type"],
-                        inReplyToTx: targetBmapTx.MAP[0].context === "tx" ? targetBmapTx.MAP[0].tx : null,
-                        app: targetBmapTx.MAP[0].app,
-                        postedByUserAddress: targetBmapTx.in[0].e.a,
-                      }
-                    }
+                    connect: { txid: targetTxid }
                 },
                 messageLockTarget: {
-                    connectOrCreate: {
-                        where: {
-                        txid: targetTxid
-                        },
-                        create: {
-                            txid: targetTxid,
-                            unixtime: targetBmapTx.blk.t,
-                            content: targetBmapTx.B[0].content,
-                            contentType: targetBmapTx.B[0]["content-type"],
-                            inReplyToTx: targetBmapTx.MAP[0].context === "tx" ? targetBmapTx.MAP[0].tx : null,
-                            app: targetBmapTx.MAP[0].app,
-                            channel: targetBmapTx.MAP[0].channel,
-                            sentByUserAddress: targetBmapTx.in[0].e.a,
-                        }
-                    }
+                    connect: { txid: targetTxid }
                 },
                 locker: {
                     connectOrCreate: {
