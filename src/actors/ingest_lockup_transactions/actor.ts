@@ -160,12 +160,10 @@ export async function start(){
                     }
                 },
                 app: bmapTx.MAP[0].app,
-                postLockTarget: targetBmapTx.MAP[0].type === "post" ? {
+                postLockTarget:  {
                     connect: { txid: targetTxid }
-                } : {},
-                messageLockTarget: targetBmapTx.MAP[0].type === "message" ? {
-                    connect: { txid: targetTxid }
-                } : {},
+                },
+                
                 locker: {
                     connectOrCreate: {
                         where: {
