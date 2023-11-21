@@ -67,8 +67,14 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                             }
                         } : {},
                         postedBy: {
-                            connect: {
-                                address: t.in[0].e.a,
+                            connectOrCreate: {
+                                where: {
+                                    address: t.in[0].e.a
+                                },
+                                create: {
+                                    address: t.in[0].e.a,
+                                    paymail: t.MAP[0].paymail
+                                }
                             }
                         },
                         app: t.MAP[0].app ? t.MAP[0].app : null,
@@ -100,8 +106,14 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                             }
                         },
                         locker: {
-                            connect: {
-                                address: t.in[0].e.a
+                            connectOrCreate: {
+                                where: {
+                                    address: t.in[0].e.a
+                                },
+                                create: {
+                                    address: t.in[0].e.a,
+                                    paymail: t.MAP[0].paymail
+                                }
                             }
                         }
                     },
