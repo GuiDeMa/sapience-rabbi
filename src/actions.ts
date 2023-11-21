@@ -42,7 +42,8 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                     create: {
                         address: t.in[0].e.a,
                         paymail: t.MAP[0].paymail
-                    }
+                    },
+                    update: {}
                 })
             } catch (e) {
                 throw new Error('Failed to ingest user ' + t.MAP[0].paymail + " : " + e )
@@ -68,7 +69,6 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                         postedBy: {
                             connect: {
                                 address: t.in[0].e.a,
-                                paymail: t.MAP[0].paymail
                             }
                         },
                         app: t.MAP[0].app ? t.MAP[0].app : null,
