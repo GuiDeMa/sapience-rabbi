@@ -75,7 +75,7 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                         channel: t.MAP[0].channel ? t.MAP[0].channel : null
                     },
                     update: {
-                        blockHeight: t.blk
+                        blockHeight: t.blk.i
                     }
                 })
             } catch (e) {
@@ -106,7 +106,7 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                         }
                     },
                     update: {
-                        blockHeight: t.blk
+                        blockHeight: t.blk.i
                     }
                 })
             } catch (e) {
