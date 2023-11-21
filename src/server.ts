@@ -78,13 +78,13 @@ server.route({
 
 server.route({
   method: 'GET',
-  path: '/lockstream',
-  handler: handlers.Sse.locks
+  path: '/mempool',
+  handler: handlers.Sse.mempool
 });
 
 server.route({
   method: 'GET',
-  path: '/blockstream',
+  path: '/blocks',
   handler: handlers.Sse.blocks
 });
 
