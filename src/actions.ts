@@ -64,7 +64,7 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                             connect: {
                                 txid: t.MAP[0].tx
                             }
-                        } : null,
+                        } : {},
                         postedBy: {
                             connect: {
                                 address: t.in[0].e.a,
