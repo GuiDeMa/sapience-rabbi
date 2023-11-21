@@ -54,9 +54,9 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                 const newPost = await prisma.post.upsert({
                     where: { txid },
                     create: {
-                        txid: t.blk ? t.blk.t : new Date().getTime() / 1000,
+                        txid,
                         blockHeight: t.blk ? t.blk.i : null,
-                        unixtime: 0,
+                        unixtime: t.blk ? t.blk.t : new Date().getTime() / 1000,
                         type: t.MAP[0].type,
                         content: t.B[0].content,
                         contentType: t.B[0]["content-type"],
