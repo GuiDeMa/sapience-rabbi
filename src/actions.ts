@@ -1,7 +1,5 @@
 import bmapjs from 'bmapjs'
 import { BobTx } from 'bmapjs/types/common.js'
-import chalk from 'chalk'
-import { ingestBmapTransaction } from './utils/bmap'
 import { prisma } from './context'
 import { LockDataProps } from './crawler'
 const { TransformTx } = bmapjs
