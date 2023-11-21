@@ -102,9 +102,10 @@ export const UserMutation = extendType({
         const newUser = context.prisma.user.upsert({
           where: {
             address,
+            paymail
           },
           update: {
-            paymail
+            paymail,
           },
           create: {
             address,

@@ -16,7 +16,7 @@
   "ts-node": {
     "esm": true,
   },
-  "include": ["/**/*.ts", "bsv-spv-importers/lockup-listener.js"],
+  "include": ["src/**/*.ts"],
   "exclude": [
     "node_modules",
     "dist",

@@ -3,7 +3,7 @@ import config from './config'
 
 import { start as server } from './server'
 
-import { start as lockupActor } from "./actors/ingest_lockup_transactions/actor"
+import { start as junglebus } from "./actors/junglebus/actor"
 
 export async function start() {
 
@@ -13,10 +13,7 @@ export async function start() {
 
   }
   
-  if (config.get('amqp_enabled')) {
-    lockupActor();
-
-  }
+  junglebus()
 
 }
 

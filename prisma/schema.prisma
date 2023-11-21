@@ -10,10 +10,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Block {
+  id Int @id @default(autoincrement())
+  height Int @unique
+}
+
 model User {
   id       Int       @id @default(autoincrement())
   address  String    @unique
-  paymail  String?
+  paymail  String?   @unique
   posts    Post[]    @relation(name: "Posts")
   locks    Lock[]    @relation(name: "Locks")
 }
@@ -26,6 +31,7 @@ enum Type {
 model Post {
   id                  Int         @id @default(autoincrement())
   txid                String      @unique
+  blockHeight         Int?
   unixtime            Int
   content             String
   contentType         String
@@ -43,9 +49,10 @@ model Post {
 model Lock {
   id                  Int         @id @default(autoincrement())
   txid                String      @unique
+  blockHeight         Int?
   unixtime            Int
   satoshis            BigInt
-  blockHeight         BigInt
+  lockUntilHeight     BigInt
   vibes               Float
   lockTarget          Post       @relation(name: "LockTo", fields: [lockTargetByTxid], references: [txid])
   lockTargetByTxid    String

@@ -8,6 +8,7 @@ export const Post = objectType({
   definition(t) {
     t.nonNull.int("id");
     t.nonNull.string("txid");
+    t.int("blockHeight");
     t.nonNull.int("unixtime");
     t.nonNull.string("content");
     t.nonNull.string("contentType");
@@ -82,6 +83,7 @@ export const PostQuery = extendType({
 
 export interface NewPostProps {
   txid: string;
+  blockHeight?: number;
   unixtime: number;
   content: string;
   contentType: string;
@@ -100,6 +102,7 @@ export const PostMutation = extendType({
       type: "Post",
       args: {
         txid: nonNull(stringArg()),
+        blockHeight: intArg(),
         unixtime: nonNull(intArg()),
         content: nonNull(stringArg()),
         contentType: nonNull(stringArg()),
@@ -111,7 +114,7 @@ export const PostMutation = extendType({
         channel: stringArg()
       },
       async resolve(parent, args: NewPostProps, context) {
-        const { txid, unixtime, content, contentType, type, inReplyToTx, postedByUserAddress, postedByUserPaymail, app, channel } = args
+        const { txid, blockHeight, unixtime, content, contentType, type, inReplyToTx, postedByUserAddress, postedByUserPaymail, app, channel } = args
         /* const { userId } = context;
         
         if (!userId) {
@@ -122,6 +125,7 @@ export const PostMutation = extendType({
           where: { txid },
           create: {
             txid,
+            blockHeight,
             unixtime,
             content,
             contentType,
@@ -132,30 +136,15 @@ export const PostMutation = extendType({
               }
             },
             postedBy: {
-              connectOrCreate: {
-                where: { address: postedByUserAddress },
-                create: { 
-                  address: postedByUserAddress,
-                  paymail: postedByUserPaymail
-                }
+              connect: {
+                address: postedByUserAddress
               }
             },
             app,
             channel
           },
           update: {
-            postedBy: {
-              connectOrCreate: {
-                where: { address: postedByUserAddress },
-                create: { 
-                  address: postedByUserAddress,
-                  paymail: postedByUserPaymail
-                }
-              }
-            },
-          },
-          include: {
-            postedBy: true
+            blockHeight
           }
         })
         

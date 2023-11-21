@@ -63,6 +63,10 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  Block: { // root type
+    height: number; // Int!
+    id: number; // Int!
+  }
   Lock: { // root type
     app?: string | null; // String
     blockHeight: NexusGenScalars['BigInt']; // BigInt!
@@ -118,6 +122,10 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
+  Block: { // field return type
+    height: number; // Int!
+    id: number; // Int!
+  }
   Lock: { // field return type
     app: string | null; // String
     blockHeight: NexusGenScalars['BigInt']; // BigInt!
@@ -131,6 +139,7 @@ export interface NexusGenFieldTypes {
     vibes: number; // Float!
   }
   Mutation: { // field return type
+    block: NexusGenRootTypes['Block']; // Block!
     lock: NexusGenRootTypes['Lock']; // Lock!
     post: NexusGenRootTypes['Post']; // Post!
     user: NexusGenRootTypes['User']; // User!
@@ -177,6 +186,10 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  Block: { // field return type name
+    height: 'Int'
+    id: 'Int'
+  }
   Lock: { // field return type name
     app: 'String'
     blockHeight: 'BigInt'
@@ -190,6 +203,7 @@ export interface NexusGenFieldTypeNames {
     vibes: 'Float'
   }
   Mutation: { // field return type name
+    block: 'Block'
     lock: 'Lock'
     post: 'Post'
     user: 'User'
@@ -237,6 +251,9 @@ export interface NexusGenFieldTypeNames {
 
 export interface NexusGenArgTypes {
   Mutation: {
+    block: { // args
+      height: number; // Int!
+    }
     lock: { // args
       app?: string | null; // String
       blockHeight: number; // Int!

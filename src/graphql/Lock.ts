@@ -8,6 +8,7 @@ export const Lock = objectType({
   definition(t) {
     t.nonNull.int("id");
     t.nonNull.string("txid");
+    t.int("blockHeight");
     t.nonNull.int("unixtime");
     t.nonNull.bigint("satoshis");
     t.nonNull.bigint("blockHeight");
@@ -19,7 +20,6 @@ export const Lock = objectType({
         return context.prisma.lock.findUnique({ where: { txid: parent.txid } }).locker()
       }
     });
-    t.nonNull.string("lockTargetByTxid");
     t.field("lockTarget", {
       type: "Post",
       resolve(parent, args, context) {
@@ -81,9 +81,10 @@ export const LockQuery = extendType({
 
 interface NewLockProps {
   txid: string;
+  blockHeight: number;
   unixtime: number;
   satoshis: number;
-  blockHeight: number;
+  lockUntilHeight: number;
   lockTargetByTxid: string;
   lockTarget?: NewPostProps;
   lockerByUserAddress: string;
@@ -98,16 +99,17 @@ export const LockMutation = extendType({
       type: "Lock",
       args: {
         txid: nonNull(stringArg()),
+        blockHeight: intArg(),
         unixtime: nonNull(intArg()),
         satoshis: nonNull(intArg()),
-        blockHeight: nonNull(intArg()),
+        lockUntilHeight: nonNull(intArg()),
         lockTargetByTxid: nonNull(stringArg()),
         lockerByUserAddress: nonNull(stringArg()),
         lockerByUserPaymail: stringArg(),
         app: stringArg()
       },
       async resolve(parent, args: NewLockProps, context) {
-        const { txid, unixtime, satoshis, blockHeight, lockTargetByTxid, lockTarget, lockerByUserAddress, lockerByUserPaymail, app } = args
+        const { txid, blockHeight, unixtime, satoshis, lockUntilHeight, lockTargetByTxid, lockTarget, lockerByUserAddress, lockerByUserPaymail, app } = args
 
         /* const { userId } = context;
         
@@ -121,65 +123,25 @@ export const LockMutation = extendType({
           where: { txid },
           create: {
             txid,
+            blockHeight,
             unixtime,
             satoshis,
             vibes,
-            blockHeight,
+            lockUntilHeight,
             app,
             lockTarget: {
-              connectOrCreate: {
-                where: {
-                  txid: lockTargetByTxid
-                },
-                create: {
-                  txid: lockTargetByTxid,
-                  unixtime: lockTarget.unixtime,
-                  content: lockTarget.content,
-                  contentType: lockTarget.contentType,
-                  inReplyTo: {
-                    connect: { txid }
-                  },
-                  app: lockTarget.app,
-                  type: lockTarget.type,
-                  channel: lockTarget.channel,
-                  postedBy: {
-                    connectOrCreate: {
-                      where: {
-                        address: lockTarget.postedByUserAddress
-                      },
-                      create: {
-                        address: lockTarget.postedByUserAddress,
-                        paymail: lockTarget.postedByUserPaymail
-                      }
-                    }
-                  }
-                }
+              connect: {
+                txid: lockTargetByTxid
               }
             },
             locker: {
-              connectOrCreate: {
-                where: {
-                  address: lockerByUserAddress
-                },
-                create: {
-                  address: lockerByUserAddress,
-                  paymail: lockerByUserPaymail
-                }
+              connect: {
+                address: lockerByUserAddress
               }
             }
           },
           update: {
-            locker: {
-              connectOrCreate: {
-                where: {
-                  address: lockerByUserAddress
-                },
-                create: {
-                  address: lockerByUserAddress,
-                  paymail: lockerByUserPaymail
-                }
-              }
-            }
+            blockHeight
           }
         })
 
