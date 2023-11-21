@@ -3,7 +3,6 @@ import { BmapTx, BobTx } from 'bmapjs/types/common.js'
 import { parse } from 'bpu-ts'
 import { rewind, saveBlock, saveTx } from "./actions";
 const bsv = require('bsv')
-const chalk = require("chalk")
 const { connect } = require('amqplib')
 
 const LOCKUP_PREFIX = `2097dfd76851bf465e8f715593b217714858bbe9570ff3bd5e33840a34e20ff0262102ba79df5f8ae7604a9830f03c7933028186aede0675a16f025dc4f8be8eec0382201008ce7480da41702918d1ec8e6849ba32b4d65b1e40dc669c31a1e6306b266c`;
@@ -52,7 +51,7 @@ const crawl = (height: number, jungleBusClient: JungleBusClient) => {
                 try {
                     await processTransaction(ctx)
                 } catch (error) {
-                    console.log(chalk.redBright('Failed to process block tx', error))
+                    console.log('Failed to process block tx', error)
                 }
             },
             async function onStatus(cMsg) {
@@ -63,29 +62,29 @@ const crawl = (height: number, jungleBusClient: JungleBusClient) => {
                     setCurrentBlock(cMsg.block)
 
                     console.log(
-                        chalk.blue('####  '),
-                        chalk.magenta('NEW BLOCK '),
-                        chalk.green(currentBlock),
+                        '####  ',
+                        'NEW BLOCK ',
+                        currentBlock,
                         cMsg.transactions > 0
-                          ? chalk.bgCyan(cMsg.transactions)
-                          : chalk.bgGray('No transactions this block')
+                          ? cMsg.transactions
+                          : 'No transactions this block'
                     )
                 } else if (cMsg.statusCode === ControlMessageStatusCode.WAITING) {
                     console.log(
-                        chalk.blue('####  '),
-                        chalk.yellow('WAITING ON NEW BLOCK ')
+                        '####  ',
+                        'WAITING ON NEW BLOCK '
                     )
                     synced = true
                 } else if (cMsg.statusCode === ControlMessageStatusCode.REORG) {
                     console.log(
-                        chalk.blue('####  '),
-                        chalk.red('REORG TRIGGERED ', cMsg.block)
+                        '####  ',
+                        'REORG TRIGGERED ', cMsg.block
                     )
 
                     await rewind(cMsg.block)
                     setCurrentBlock(cMsg.block)
                 } else {
-                    chalk.red(cMsg)
+                    console.error(cMsg)
                 }
 
             },
@@ -99,7 +98,7 @@ const crawl = (height: number, jungleBusClient: JungleBusClient) => {
                 try {
                     await processTransaction(ctx)
                 } catch (error) {
-                    console.log(chalk.redBright('Failed to process mempool tx', error))
+                    console.log('Failed to process mempool tx', error)
                 }
             }
         )
@@ -108,7 +107,7 @@ const crawl = (height: number, jungleBusClient: JungleBusClient) => {
 
 const crawler = async (jungleBusClient: JungleBusClient) => {
 
-    chalk.cyan('CRAWLING FROM BLOCK HEIGHT', currentBlock)
+    console.log('CRAWLING FROM BLOCK HEIGHT', currentBlock)
 
     await crawl(currentBlock, jungleBusClient).catch((e) => {
         console.log('ERROR', e)

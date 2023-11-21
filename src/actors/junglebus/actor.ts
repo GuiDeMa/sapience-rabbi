@@ -1,7 +1,6 @@
 import { JungleBusClient } from '@gorillapool/js-junglebus'
 import { crawler, setCurrentBlock } from '../../crawler'
 import { getCurrentBlock } from '../../state'
-const chalk = require("chalk")
 
 export async function start() {
     
@@ -9,7 +8,7 @@ export async function start() {
 
         let currentBlock = await getCurrentBlock()
         setCurrentBlock(currentBlock)
-        console.log(chalk.cyan('crawling from', currentBlock))
+        console.log('crawling from', currentBlock)
         
         const s = 'junglebus.gorillapool.io'
         console.log('CRAWLING', s)
