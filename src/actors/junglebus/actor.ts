@@ -1,7 +1,7 @@
 import { JungleBusClient } from '@gorillapool/js-junglebus'
-import chalk from 'chalk'
 import { crawler, setCurrentBlock } from '../../crawler'
 import { getCurrentBlock } from '../../state'
+const chalk = require("chalk")
 
 export async function start() {
     
