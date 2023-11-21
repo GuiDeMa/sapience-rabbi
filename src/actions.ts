@@ -43,7 +43,9 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                         address: t.in[0].e.a,
                         paymail: t.MAP[0].paymail
                     },
-                    update: {}
+                    update: {
+                        paymail: t.MAP[0].paymail
+                    }
                 })
             } catch (e) {
                 throw new Error('Failed to ingest user ' + t.MAP[0].paymail + " : " + e )
