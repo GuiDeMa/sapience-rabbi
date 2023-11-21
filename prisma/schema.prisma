@@ -18,7 +18,7 @@ model Block {
 model User {
   id       Int       @id @default(autoincrement())
   address  String    @unique
-  paymail  String?   @unique
+  paymail  String?   
   posts    Post[]    @relation(name: "Posts")
   locks    Lock[]    @relation(name: "Locks")
 }
