@@ -22,7 +22,6 @@ type Lock {
   blockHeight: BigInt!
   id: Int!
   lockTarget: Post
-  lockTargetByTxid: String!
   locker: User!
   satoshis: BigInt!
   txid: String!
@@ -36,13 +35,14 @@ input LockOrderByInput {
 
 type Mutation {
   block(height: Int!): Block!
-  lock(app: String, blockHeight: Int!, lockTargetByTxid: String!, lockerByUserAddress: String!, lockerByUserPaymail: String, satoshis: Int!, txid: String!, unixtime: Int!): Lock!
-  post(app: String, channel: String, content: String!, contentType: String!, inReplyToTx: String, postedByUserAddress: String!, postedByUserPaymail: String, txid: String!, type: String!, unixtime: Int!): Post!
+  lock(app: String, blockHeight: Int, lockTargetByTxid: String!, lockUntilHeight: Int!, lockerByUserAddress: String!, lockerByUserPaymail: String, satoshis: Int!, txid: String!, unixtime: Int!): Lock!
+  post(app: String, blockHeight: Int, channel: String, content: String!, contentType: String!, inReplyToTx: String, postedByUserAddress: String!, postedByUserPaymail: String, txid: String!, type: String!, unixtime: Int!): Post!
   user(address: String!, paymail: String): User!
 }
 
 type Post {
   app: String
+  blockHeight: Int
   channel: String
   content: String!
   contentType: String!

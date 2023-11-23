@@ -17,10 +17,10 @@ model Block {
 
 model User {
   id       Int       @id @default(autoincrement())
-  address  String    @unique
-  paymail  String?   
-  posts    Post[]    @relation(name: "Posts")
-  locks    Lock[]    @relation(name: "Locks")
+  paymail  String    @unique  
+  addresses  String[]    
+  //posts    Post[]    @relation(name: "Posts")
+  //locks    Lock[]    @relation(name: "Locks")
 }
 
 enum Type {
@@ -36,14 +36,15 @@ model Post {
   content             String
   contentType         String
   type                Type
-  inReplyTo           Post?       @relation(name: "Replies", fields: [inReplyToTx], references: [txid])
+  //inReplyTo           Post?       @relation(name: "Replies", fields: [inReplyToTx], references: [txid])
   inReplyToTx         String?
-  postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
+  //postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
   postedByUserAddress String
+  postedByUserPaymail String?
   app                 String?
   channel String?
-  locks               Lock[]      @relation(name: "LockTo")
-  replies             Post[]      @relation(name: "Replies")
+  //locks               Lock[]      @relation(name: "LockTo")
+  //replies             Post[]      @relation(name: "Replies")
 }
 
 model Lock {
@@ -54,9 +55,9 @@ model Lock {
   satoshis            BigInt
   lockUntilHeight     BigInt
   vibes               Float
-  lockTarget          Post       @relation(name: "LockTo", fields: [lockTargetByTxid], references: [txid])
+  //lockTarget          Post       @relation(name: "LockTo", fields: [lockTargetByTxid], references: [txid])
   lockTargetByTxid    String
-  locker              User        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
+  //locker              User        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
   lockerByUserAddress String
   lockerByUserPaymail String?
   app                 String?

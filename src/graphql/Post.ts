@@ -13,20 +13,23 @@ export const Post = objectType({
     t.nonNull.string("content");
     t.nonNull.string("contentType");
     t.nonNull.string("type");
-    t.field("inReplyTo", {
+    t.string("inReplyToTx");
+    t.nonNull.string("postedByUserAddress");
+    t.string("postedByUserPaymail")
+    /* t.field("inReplyTo", {
       type: "Post",
       resolve(parent, args, context) {
         return context.prisma.post.findUnique({ where: {txid: parent.txid}})
       }
-    });
+    }); */
     t.string("app");
     t.string("channel")
-    t.nonNull.field("postedBy", {
+    /* t.nonNull.field("postedBy", {
       type: "User",
       resolve(parent, args, context) {
         return context.prisma.post.findUnique({ where: { txid: parent.txid } }).postedBy()
       }
-    })
+    }) */
   },
 })
 
@@ -130,16 +133,9 @@ export const PostMutation = extendType({
             content,
             contentType,
             type,
-            inReplyTo: {
-              connect: {
-                txid: inReplyToTx
-              }
-            },
-            postedBy: {
-              connect: {
-                address: postedByUserAddress
-              }
-            },
+            inReplyToTx,
+            postedByUserAddress,
+            postedByUserPaymail,
             app,
             channel
           },

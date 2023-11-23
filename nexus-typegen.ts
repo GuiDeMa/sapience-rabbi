@@ -71,7 +71,6 @@ export interface NexusGenObjects {
     app?: string | null; // String
     blockHeight: NexusGenScalars['BigInt']; // BigInt!
     id: number; // Int!
-    lockTargetByTxid: string; // String!
     satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
     unixtime: number; // Int!
@@ -80,6 +79,7 @@ export interface NexusGenObjects {
   Mutation: {};
   Post: { // root type
     app?: string | null; // String
+    blockHeight?: number | null; // Int
     channel?: string | null; // String
     content: string; // String!
     contentType: string; // String!
@@ -131,7 +131,6 @@ export interface NexusGenFieldTypes {
     blockHeight: NexusGenScalars['BigInt']; // BigInt!
     id: number; // Int!
     lockTarget: NexusGenRootTypes['Post'] | null; // Post
-    lockTargetByTxid: string; // String!
     locker: NexusGenRootTypes['User']; // User!
     satoshis: NexusGenScalars['BigInt']; // BigInt!
     txid: string; // String!
@@ -146,6 +145,7 @@ export interface NexusGenFieldTypes {
   }
   Post: { // field return type
     app: string | null; // String
+    blockHeight: number | null; // Int
     channel: string | null; // String
     content: string; // String!
     contentType: string; // String!
@@ -195,7 +195,6 @@ export interface NexusGenFieldTypeNames {
     blockHeight: 'BigInt'
     id: 'Int'
     lockTarget: 'Post'
-    lockTargetByTxid: 'String'
     locker: 'User'
     satoshis: 'BigInt'
     txid: 'String'
@@ -210,6 +209,7 @@ export interface NexusGenFieldTypeNames {
   }
   Post: { // field return type name
     app: 'String'
+    blockHeight: 'Int'
     channel: 'String'
     content: 'String'
     contentType: 'String'
@@ -256,8 +256,9 @@ export interface NexusGenArgTypes {
     }
     lock: { // args
       app?: string | null; // String
-      blockHeight: number; // Int!
+      blockHeight?: number | null; // Int
       lockTargetByTxid: string; // String!
+      lockUntilHeight: number; // Int!
       lockerByUserAddress: string; // String!
       lockerByUserPaymail?: string | null; // String
       satoshis: number; // Int!
@@ -266,6 +267,7 @@ export interface NexusGenArgTypes {
     }
     post: { // args
       app?: string | null; // String
+      blockHeight?: number | null; // Int
       channel?: string | null; // String
       content: string; // String!
       contentType: string; // String!

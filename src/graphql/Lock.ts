@@ -14,18 +14,21 @@ export const Lock = objectType({
     t.nonNull.bigint("blockHeight");
     t.nonNull.float("vibes");
     t.string("app");
-    t.nonNull.field("locker", {
+    t.nonNull.string('lockTargetByTxid')
+    t.nonNull.string('lockerByUserAddress')
+    t.string("lockerByPaymail")
+    /* t.nonNull.field("locker", {
       type: "User",
       resolve(parent, args, context) {
         return context.prisma.lock.findUnique({ where: { txid: parent.txid } }).locker()
       }
-    });
-    t.field("lockTarget", {
+    }); */
+    /* t.field("lockTarget", {
       type: "Post",
       resolve(parent, args, context) {
         return context.prisma.lock.findFirst({ where: { lockTargetByTxid: parent.lockTargetByTxid}}).lockTarget()
       }
-    });
+    }); */
   },
 })
 
@@ -86,7 +89,7 @@ interface NewLockProps {
   satoshis: number;
   lockUntilHeight: number;
   lockTargetByTxid: string;
-  lockTarget?: NewPostProps;
+  //lockTarget?: NewPostProps;
   lockerByUserAddress: string;
   lockerByUserPaymail?: string;
   app?: string;
@@ -109,7 +112,7 @@ export const LockMutation = extendType({
         app: stringArg()
       },
       async resolve(parent, args: NewLockProps, context) {
-        const { txid, blockHeight, unixtime, satoshis, lockUntilHeight, lockTargetByTxid, lockTarget, lockerByUserAddress, lockerByUserPaymail, app } = args
+        const { txid, blockHeight, unixtime, satoshis, lockUntilHeight, lockTargetByTxid, lockerByUserAddress, lockerByUserPaymail, app } = args
 
         /* const { userId } = context;
         
@@ -129,16 +132,9 @@ export const LockMutation = extendType({
             vibes,
             lockUntilHeight,
             app,
-            lockTarget: {
-              connect: {
-                txid: lockTargetByTxid
-              }
-            },
-            locker: {
-              connect: {
-                address: lockerByUserAddress
-              }
-            }
+            lockTargetByTxid,
+            lockerByUserAddress,
+            lockerByUserPaymail
           },
           update: {
             blockHeight
