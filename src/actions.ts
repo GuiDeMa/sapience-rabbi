@@ -1,4 +1,4 @@
-import bmapjs from 'bmapjs'
+import bmapjs, { bobFromRawTx } from 'bmapjs'
 import { BobTx } from 'bmapjs/types/common.js'
 import { prisma } from './context'
 import { LockDataProps } from './crawler'
@@ -105,7 +105,8 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
             let targetTx = t
             if (t.MAP[0].type === "like"){
                 const newTargetHex = await fetchTransaction({ txid: targetTx.MAP[0].tx })
-                targetTx = await TransformTx(newTargetHex)
+                const newTargetBob = await bobFromRawTx(newTargetHex)
+                targetTx = await TransformTx(newTargetBob)
             } 
             try {
                 const newLock = await prisma.lock.upsert({
