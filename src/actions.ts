@@ -37,16 +37,17 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
             try {
                 const newUser = await prisma.user.upsert({
                     where: {
-                        address: t.in[0].e.a,
+                        paymail: t.MAP[0].paymail,
                     },
                     create: {
-                        address: t.in[0].e.a,
-                        paymail: t.MAP[0].paymail
+                        paymail: t.MAP[0].paymail,
+                        addresses: { push: t.in[0].e.a },
                     },
                     update: {
-                        paymail: t.MAP[0].paymail
+                        addresses: { push: t.MAP[0].paymail }
                     }
                 })
+                console.log("new.user.created", newUser)
             } catch (e) {
                 throw new Error('Failed to ingest user ' + t.MAP[0].paymail + " : " + e )
             }
@@ -63,51 +64,23 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                         type: t.MAP[0].type,
                         content: t.B[0].content,
                         contentType: t.B[0]["content-type"],
-                        inReplyTo: t.MAP[0].tx ? {
-                            connect: {
-                                txid: t.MAP[0].tx
-                            }
-                        } : {},
-                        postedBy: {
-                            connectOrCreate: {
-                                where: {
-                                    address: t.in[0].e.a
-                                },
-                                create: {
-                                    address: t.in[0].e.a,
-                                    paymail: t.MAP[0].paymail
-                                }
-                            }
-                        },
+                        inReplyToTx: t.MAP[0].tx ? t.MAP[0].tx : null,
+                        postedByUserAddress: t.in[0].e.a,
+                        postedByUserPaymail: t.MAP[0].paymail ? t.MAP[0].paymail : null,
                         app: t.MAP[0].app ? t.MAP[0].app : null,
                         channel: t.MAP[0].channel ? t.MAP[0].channel : null
                     },
                     update: {
                         blockHeight: t.blk.i,
-                        postedBy: {
-                            connectOrCreate: {
-                                where: {
-                                    address: t.in[0].e.a
-                                },
-                                create: {
-                                    address: t.in[0].e.a,
-                                    paymail: t.MAP[0].paymail
-                                }
-                            }
-                        }
                     }
                 })
+                console.log("new.post.created", newPost)
             } catch (e) {
                 throw new Error('Failed to ingest post ' + txid + ' : ' + e)
             }
         }
         if (lockupData) {
-            let targetTx = t
-            if (t.MAP[0].type === "like"){
-                const newTargetHex = await fetchTransaction({ txid: targetTx.MAP[0].tx })
-                const newTargetBob = await bobFromRawTx(newTargetHex)
-                targetTx = await TransformTx(newTargetBob)
-            } 
+            
             try {
                 const newLock = await prisma.lock.upsert({
                     where: { txid },
@@ -117,64 +90,17 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                         satoshis: lockupData.satoshis,
                         lockUntilHeight: lockupData.lockUntilHeight,
                         vibes: lockupData.satoshis * Math.log10(lockupData.lockUntilHeight),
-                        unixtime: 0,
-                        app: t.MAP[0].app ? t.MAP[0].app : null,
-                        lockTarget: {
-                            connectOrCreate: {
-                                where: { txid: targetTx.tx.h },
-                                create: {
-                                    txid: targetTx.tx.h,
-                                    blockHeight: targetTx.blk ? targetTx.blk.i : null,
-                                    unixtime: targetTx.blk ? targetTx.blk.t : new Date().getTime() / 1000,
-                                    type: targetTx.MAP[0].type,
-                                    content: targetTx.B[0].content,
-                                    contentType: targetTx.B[0]["content-type"],
-                                    inReplyTo: targetTx.MAP[0].tx ? {
-                                        connect: { txid: targetTx.MAP[0].tx }
-                                    } : {},
-                                    postedBy: {
-                                        connectOrCreate: {
-                                            where: {
-                                                address: targetTx.in[0].e.a
-                                            },
-                                            create: {
-                                                address: targetTx.in[0].e.a,
-                                                paymail: targetTx.MAP[0].paymail
-                                            }
-                                        }
-                                    },
-                                    app: targetTx.MAP[0].app,
-                                    channel: targetTx.MAP[0].channel
-                                }
-                            },
-                        },
-                        locker: {
-                            connectOrCreate: {
-                                where: {
-                                    address: t.in[0].e.a
-                                },
-                                create: {
-                                    address: t.in[0].e.a,
-                                    paymail: t.MAP[0].paymail
-                                }
-                            }
-                        }
+                        unixtime: t.blk ? t.blk.t : new Date().getTime() / 1000,
+                        app: t.MAP[0].app,
+                        lockTargetByTxid: t.MAP[0].tx ? t.MAP[0].tx : txid,
+                        lockerByUserAddress: t.in[0].e.a,
+                        lockerByUserPaymail: t.MAP[0].paymail ? t.MAP[0].paymail : null
                     },
                     update: {
                         blockHeight: t.blk.i,
-                        locker: {
-                            connectOrCreate: {
-                                where: {
-                                    address: t.in[0].e.a
-                                },
-                                create: {
-                                    address: t.in[0].e.a,
-                                    paymail: t.MAP[0].paymail
-                                }
-                            }
-                        }
                     }
                 })
+                console.log("new.lock.created", newLock)
             } catch (e) {
                 throw new Error('Failed to ingest lock ' + txid + ' : ' + e)
             }
