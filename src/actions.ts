@@ -2,6 +2,7 @@ import bmapjs from 'bmapjs'
 import { BobTx } from 'bmapjs/types/common.js'
 import { prisma } from './context'
 import { LockDataProps } from './crawler'
+import { fetchTransaction } from './utils/whatsonchain'
 const { TransformTx } = bmapjs
 
 const saveBlock = (block: number) => {
@@ -37,7 +38,6 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                 const newUser = await prisma.user.upsert({
                     where: {
                         address: t.in[0].e.a,
-                        paymail: t.MAP[0].paymail
                     },
                     create: {
                         address: t.in[0].e.a,
@@ -83,7 +83,18 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                         channel: t.MAP[0].channel ? t.MAP[0].channel : null
                     },
                     update: {
-                        blockHeight: t.blk.i
+                        blockHeight: t.blk.i,
+                        postedBy: {
+                            connectOrCreate: {
+                                where: {
+                                    address: t.in[0].e.a
+                                },
+                                create: {
+                                    address: t.in[0].e.a,
+                                    paymail: t.MAP[0].paymail
+                                }
+                            }
+                        }
                     }
                 })
             } catch (e) {
@@ -91,6 +102,11 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
             }
         }
         if (lockupData) {
+            let targetTx = t
+            if (t.MAP[0].type === "like"){
+                const newTargetHex = await fetchTransaction({ txid: targetTx.MAP[0].tx })
+                targetTx = await TransformTx(newTargetHex)
+            } 
             try {
                 const newLock = await prisma.lock.upsert({
                     where: { txid },
@@ -103,9 +119,33 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                         unixtime: 0,
                         app: t.MAP[0].app ? t.MAP[0].app : null,
                         lockTarget: {
-                            connect: {
-                                txid: t.MAP[0].type === "like" ? t.MAP[0].tx : txid
-                            }
+                            connectOrCreate: {
+                                where: { txid: targetTx.tx.h },
+                                create: {
+                                    txid: targetTx.tx.h,
+                                    blockHeight: targetTx.blk ? targetTx.blk.i : null,
+                                    unixtime: targetTx.blk ? targetTx.blk.t : new Date().getTime() / 1000,
+                                    type: targetTx.MAP[0].type,
+                                    content: targetTx.B[0].content,
+                                    contentType: targetTx.B[0]["content-type"],
+                                    inReplyTo: targetTx.MAP[0].tx ? {
+                                        connect: { txid: targetTx.MAP[0].tx }
+                                    } : {},
+                                    postedBy: {
+                                        connectOrCreate: {
+                                            where: {
+                                                address: targetTx.in[0].e.a
+                                            },
+                                            create: {
+                                                address: targetTx.in[0].e.a,
+                                                paymail: targetTx.MAP[0].paymail
+                                            }
+                                        }
+                                    },
+                                    app: targetTx.MAP[0].app,
+                                    channel: targetTx.MAP[0].channel
+                                }
+                            },
                         },
                         locker: {
                             connectOrCreate: {
@@ -120,7 +160,18 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
                         }
                     },
                     update: {
-                        blockHeight: t.blk.i
+                        blockHeight: t.blk.i,
+                        locker: {
+                            connectOrCreate: {
+                                where: {
+                                    address: t.in[0].e.a
+                                },
+                                create: {
+                                    address: t.in[0].e.a,
+                                    paymail: t.MAP[0].paymail
+                                }
+                            }
+                        }
                     }
                 })
             } catch (e) {
