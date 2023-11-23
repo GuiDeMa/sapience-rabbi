@@ -179,7 +179,7 @@ export async function processTransaction(ctx: Partial<Transaction>) {
         }
         
     } catch (e) {
-        console.error('Failed to bob tx', e)
+        console.error(`Failed to bob tx ${ctx.id}`, e)
         return null
     }
     
