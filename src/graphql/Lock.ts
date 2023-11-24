@@ -135,9 +135,8 @@ export const LockMutation = extendType({
             lockTarget: {
               connect: lockTargetByTxid
             },
-            locker: {
-              connect: lockerByUserAddress
-            }
+            lockerByUserAddress,
+            lockerByUserPaymail
           },
           update: {
             blockHeight

@@ -33,21 +33,6 @@ const saveTx = async (tx: BobTx, lockupData?: LockDataProps) => {
 
     if(t) {
         let txid = tx && tx.tx ? tx.tx.h : undefined
-        if (t.MAP[0].paymail){
-            try {
-                const existingUser = await prisma.user.findUnique({ where: { address: t.MAP[0].paymail }})
-                if(!existingUser){
-                    const newUser = await prisma.user.create({
-                            paymail: t.MAP[0].paymail,
-                            addresses: { push: t.in[0].e.a },
-                    })
-                    console.log("new.user.created", newUser)
-
-                }
-            } catch (e) {
-                throw new Error('Failed to ingest user ' + t.MAP[0].paymail + " : " + e )
-            }
-        }
         if (t.MAP[0].type === "post" || t.MAP[0].type === "message") {
             try {
                 if(t.MAP[0].tx){
@@ -68,13 +53,8 @@ const saveTx = async (tx: BobTx, lockupData?: LockDataProps) => {
                         content: t.B[0].content,
                         contentType: t.B[0]["content-type"],
                         inReplyTo: t.MAP[0].tx ? { connect: { txid: t.MAP[0].tx }} : {},
-                        postedBy: { connectOrCreate: {
-                            where: { paymail: t.MAP[0].paymail},
-                            create: {
-                                paymail: t.MAP[0].paymail,
-                                address: t.in[0].e.a
-                            }
-                        }},
+                        postedByUserAddress: t.in[0].e.a,
+                        postedByUserPaymail: t.MAP[0].paymail ? t.MAP[0].paymail : null,
                         app: t.MAP[0].app ? t.MAP[0].app : null,
                         channel: t.MAP[0].channel ? t.MAP[0].channel : null
                     },
@@ -108,17 +88,8 @@ const saveTx = async (tx: BobTx, lockupData?: LockDataProps) => {
                         unixtime: t.blk ? t.blk.t : new Date().getTime() / 1000,
                         app: t.MAP[0].app,
                         lockTarget: { connect: { txid: t.MAP[0].type === "like" ? t.MAP[0].tx : txid }},
-                        locker: {
-                            connectOrCreate: {
-                                where: {
-                                    address: t.in[0].e.a
-                                },
-                                create: {
-                                    address: t.in[0].e.a,
-                                    paymail: t.MAP[0].paymail
-                                }
-                            }
-                        }
+                        lockerByUserAddress: t.in[0].e.a,
+                        lockerByUserPaymail: t.MAP[0].paymail ? t.MAP[0].paymail : null
                     },
                     update: {
                         blockHeight: t.blk.i,

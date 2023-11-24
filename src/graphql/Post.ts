@@ -135,9 +135,8 @@ export const PostMutation = extendType({
             inReplyTo: {
               connect: { txid: inReplyToTx }
             },
-            postedBy: {
-              connect: { address: postedByUserAddress }
-            },
+            postedByUserAddress,
+            postedByUserPaymail,
             app,
             channel
           },

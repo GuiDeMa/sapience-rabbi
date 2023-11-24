@@ -15,13 +15,13 @@ model Block {
   height Int @unique
 }
 
-model User {
-  id       Int       @id @default(autoincrement())
-  address  String    @unique
-  paymail  String?    @unique  
-  posts    Post[]    @relation(name: "Posts")
-  locks    Lock[]    @relation(name: "Locks")
-}
+// model User {
+//   id       Int       @id @default(autoincrement())
+//   address  String    @unique
+//   paymail  String?    @unique  
+//   posts    Post[]    @relation(name: "Posts")
+//   locks    Lock[]    @relation(name: "Locks")
+// }
 
 enum Type {
   post
@@ -38,7 +38,7 @@ model Post {
   type                Type
   inReplyTo           Post?       @relation(name: "Replies", fields: [inReplyToTx], references: [txid])
   inReplyToTx         String?
-  postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
+  //postedBy            User        @relation(name: "Posts", fields: [postedByUserAddress], references: [address])
   postedByUserAddress String
   postedByUserPaymail String?
   app                 String?
@@ -57,7 +57,7 @@ model Lock {
   vibes               Float
   lockTarget          Post       @relation(name: "LockTo", fields: [lockTargetByTxid], references: [txid])
   lockTargetByTxid    String
-  locker              User        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
+  //locker              User        @relation(name: "Locks", fields: [lockerByUserAddress], references: [address])
   lockerByUserAddress String
   lockerByUserPaymail String?
   app                 String?
