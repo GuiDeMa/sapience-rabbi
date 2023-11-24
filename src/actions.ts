@@ -21,7 +21,7 @@ const saveBlock = (block: number) => {
     })
 }
 
-const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
+const saveTx = async (tx: BobTx, lockupData?: LockDataProps) => {
     let t: any
 
     // Transform
@@ -35,38 +35,46 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
         let txid = tx && tx.tx ? tx.tx.h : undefined
         if (t.MAP[0].paymail){
             try {
-                const newUser = await prisma.user.upsert({
-                    where: {
-                        paymail: t.MAP[0].paymail,
-                    },
-                    create: {
-                        paymail: t.MAP[0].paymail,
-                        addresses: { push: t.in[0].e.a },
-                    },
-                    update: {
-                        addresses: { push: t.MAP[0].paymail }
-                    }
-                })
-                console.log("new.user.created", newUser)
+                const existingUser = await prisma.user.findUnique({ where: { address: t.MAP[0].paymail }})
+                if(!existingUser){
+                    const newUser = await prisma.user.create({
+                            paymail: t.MAP[0].paymail,
+                            addresses: { push: t.in[0].e.a },
+                    })
+                    console.log("new.user.created", newUser)
+
+                }
             } catch (e) {
                 throw new Error('Failed to ingest user ' + t.MAP[0].paymail + " : " + e )
             }
         }
         if (t.MAP[0].type === "post" || t.MAP[0].type === "message") {
             try {
-                
+                if(t.MAP[0].tx){
+                    const replyRecord = await prisma.post.findUnique({ where: { txid: t.MAP[0].tx }})
+                    if(!replyRecord){
+                        const replyTxHex = await fetchTransaction({ txid: t.MAP[0].tx })
+                        const replyTxBob = await bobFromRawTx(replyTxHex)
+                        await saveTx(replyTxBob)
+                    }
+                }
                 const newPost = await prisma.post.upsert({
                     where: { txid },
                     create: {
                         txid,
-                        blockHeight: t.blk ? t.blk.i : null,
+                        blockHeight: t.blk ? t.blk.i === 0 ? null: t.blk.i : null,
                         unixtime: t.blk ? t.blk.t : new Date().getTime() / 1000,
                         type: t.MAP[0].type,
                         content: t.B[0].content,
                         contentType: t.B[0]["content-type"],
-                        inReplyToTx: t.MAP[0].tx ? t.MAP[0].tx : null,
-                        postedByUserAddress: t.in[0].e.a,
-                        postedByUserPaymail: t.MAP[0].paymail ? t.MAP[0].paymail : null,
+                        inReplyTo: t.MAP[0].tx ? { connect: { txid: t.MAP[0].tx }} : {},
+                        postedBy: { connectOrCreate: {
+                            where: { paymail: t.MAP[0].paymail},
+                            create: {
+                                paymail: t.MAP[0].paymail,
+                                address: t.in[0].e.a
+                            }
+                        }},
                         app: t.MAP[0].app ? t.MAP[0].app : null,
                         channel: t.MAP[0].channel ? t.MAP[0].channel : null
                     },
@@ -80,21 +88,37 @@ const saveTx = async (tx: BobTx, lockupData: LockDataProps) => {
             }
         }
         if (lockupData) {
-            
+            if(t.MAP[0].type === "like"){
+                const likeTxRecord = await prisma.post.findUnique({ where: { txid: t.MAP[0].tx }})
+                if(!likeTxRecord){
+                    const likeTxHex = await fetchTransaction({ txid: t.MAP[0].tx })
+                    const likeTxBob = await bobFromRawTx(likeTxHex)
+                    await saveTx(likeTxBob)
+                }
+            }
             try {
                 const newLock = await prisma.lock.upsert({
                     where: { txid },
                     create: {
                         txid,
-                        blockHeight: t.blk ? t.blk.i : null,
+                        blockHeight: t.blk ? t.blk.i === 0 ? null: t.blk.i : null,
                         satoshis: lockupData.satoshis,
                         lockUntilHeight: lockupData.lockUntilHeight,
                         vibes: lockupData.satoshis * Math.log10(lockupData.lockUntilHeight),
                         unixtime: t.blk ? t.blk.t : new Date().getTime() / 1000,
                         app: t.MAP[0].app,
-                        lockTargetByTxid: t.MAP[0].tx ? t.MAP[0].tx : txid,
-                        lockerByUserAddress: t.in[0].e.a,
-                        lockerByUserPaymail: t.MAP[0].paymail ? t.MAP[0].paymail : null
+                        lockTarget: { connect: { txid: t.MAP[0].type === "like" ? t.MAP[0].tx : txid }},
+                        locker: {
+                            connectOrCreate: {
+                                where: {
+                                    address: t.in[0].e.a
+                                },
+                                create: {
+                                    address: t.in[0].e.a,
+                                    paymail: t.MAP[0].paymail
+                                }
+                            }
+                        }
                     },
                     update: {
                         blockHeight: t.blk.i,

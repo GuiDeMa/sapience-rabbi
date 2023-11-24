@@ -6,9 +6,9 @@ export const User = objectType({
   name: "User",
   definition(t) {
     t.nonNull.int("id")
-    t.nonNull.list.nonNull.string("addresses")
+    t.nonNull.string("addresses")
     t.nonNull.string("paymail")
-    /* t.nonNull.list.nonNull.field("posts", {
+    t.nonNull.list.nonNull.field("posts", {
       type: "Post",
       resolve(parent, args, context) {
         return context.prisma.user.findUnique({ where: { address : parent.address } }).posts()
@@ -19,7 +19,7 @@ export const User = objectType({
       resolve(parent, args, context) {
         return context.prisma.user.findUnique({ where: { address: parent.address } }).locks()
       }
-    }) */
+    })
   },
 })
 
@@ -101,18 +101,14 @@ export const UserMutation = extendType({
 
         const newUser = context.prisma.user.upsert({
           where: {
-            paymail
+            address
           },
           update: {
-            addresses: {
-              push: address
-            }
+            paymail
           },
           create: {
             paymail,
-            addresses: {
-              push: address
-            }
+            address
           }
         })
 

@@ -17,18 +17,18 @@ export const Lock = objectType({
     t.nonNull.string('lockTargetByTxid')
     t.nonNull.string('lockerByUserAddress')
     t.string("lockerByPaymail")
-    /* t.nonNull.field("locker", {
+    t.nonNull.field("locker", {
       type: "User",
       resolve(parent, args, context) {
         return context.prisma.lock.findUnique({ where: { txid: parent.txid } }).locker()
       }
-    }); */
-    /* t.field("lockTarget", {
+    });
+    t.field("lockTarget", {
       type: "Post",
       resolve(parent, args, context) {
         return context.prisma.lock.findFirst({ where: { lockTargetByTxid: parent.lockTargetByTxid}}).lockTarget()
       }
-    }); */
+    });
   },
 })
 
@@ -132,9 +132,12 @@ export const LockMutation = extendType({
             vibes,
             lockUntilHeight,
             app,
-            lockTargetByTxid,
-            lockerByUserAddress,
-            lockerByUserPaymail
+            lockTarget: {
+              connect: lockTargetByTxid
+            },
+            locker: {
+              connect: lockerByUserAddress
+            }
           },
           update: {
             blockHeight

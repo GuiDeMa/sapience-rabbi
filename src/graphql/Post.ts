@@ -1,7 +1,6 @@
 import { inputObjectType, objectType, enumType, extendType, stringArg, intArg, arg, list, nonNull } from "nexus";
 import { Prisma } from "@prisma/client";
 import { Sort } from "./Sort";
-import { string } from "joi";
 
 export const Post = objectType({
   name: "Post",
@@ -15,21 +14,21 @@ export const Post = objectType({
     t.nonNull.string("type");
     t.string("inReplyToTx");
     t.nonNull.string("postedByUserAddress");
-    t.string("postedByUserPaymail")
-    /* t.field("inReplyTo", {
+    t.string("postedByUserPaymail");
+    t.field("inReplyTo", {
       type: "Post",
       resolve(parent, args, context) {
         return context.prisma.post.findUnique({ where: {txid: parent.txid}})
       }
-    }); */
+    });
     t.string("app");
     t.string("channel")
-    /* t.nonNull.field("postedBy", {
+    t.nonNull.field("postedBy", {
       type: "User",
       resolve(parent, args, context) {
         return context.prisma.post.findUnique({ where: { txid: parent.txid } }).postedBy()
       }
-    }) */
+    });
   },
 })
 
@@ -133,9 +132,12 @@ export const PostMutation = extendType({
             content,
             contentType,
             type,
-            inReplyToTx,
-            postedByUserAddress,
-            postedByUserPaymail,
+            inReplyTo: {
+              connect: { txid: inReplyToTx }
+            },
+            postedBy: {
+              connect: { address: postedByUserAddress }
+            },
             app,
             channel
           },
