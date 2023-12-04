@@ -78,14 +78,38 @@ server.route({
 
 server.route({
   method: 'GET',
-  path: '/mempool',
-  handler: handlers.Sse.mempool
+  path: '/bsv/mempool',
+  handler: handlers.Bsv.mempool
 });
 
 server.route({
   method: 'GET',
-  path: '/blocks',
-  handler: handlers.Sse.blocks
+  path: '/bsv/block',
+  handler: handlers.Bsv.block
+});
+
+server.route({
+  method: 'GET',
+  path: '/bsv/reorg',
+  handler: handlers.Bsv.reorg
+});
+
+server.route({
+  method: 'GET',
+  path: '/btc/mempool',
+  handler: handlers.Btc.mempool
+});
+
+server.route({
+  method: 'GET',
+  path: '/btc/block',
+  handler: handlers.Btc.block
+});
+
+server.route({
+  method: 'GET',
+  path: '/btc/reorg',
+  handler: handlers.Btc.reorg
 });
 
 var started = false

@@ -13,7 +13,7 @@ export async function start() {
 
   }
   
-  junglebus()
+  //junglebus()
 
 }
 
