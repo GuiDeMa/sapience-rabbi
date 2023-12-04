@@ -142,10 +142,10 @@ export async function start() {
 
     const Susie = require("susie")
 
-    const apolloServer = new ApolloServer({
+    /* const apolloServer = new ApolloServer({
       schema,
       introspection: true,
-    })
+    }) */
   
     //await apolloServer.start()
 
