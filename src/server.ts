@@ -147,7 +147,7 @@ export async function start() {
       introspection: true,
     })
   
-    await apolloServer.start()
+    //await apolloServer.start()
 
     await server.register([
         Inert,
@@ -157,7 +157,7 @@ export async function start() {
           plugin: HapiSwagger,
           options: swaggerOptions
         }, 
-        { 
+        /* { 
           plugin: hapiApollo,
           options: {
             plugins: [ApolloServerPluginLandingPageLocalDefault()],
@@ -167,7 +167,7 @@ export async function start() {
             apolloServer,
             path: '/graphql'
           }
-        }
+        } */
     ]);
 
     log.info('server.api.documentation.swagger', swaggerOptions)
